@@ -34,13 +34,13 @@ TARGET_PAGES = {
 }
 
 def download_csv_from_url(page, name, url, timestamp):
-    logging.info(f"🌐 Navigating to {name}...")
+    logging.info(f"Navigating to {name}...")
     page.goto(url, timeout=60000)
     page.wait_for_load_state("networkidle")
     time.sleep(2)  # Allow legacy scripts to fully settle
     
     # 1. Catch the asynchronous file download event
-    logging.info(f"📥 Triggering CSV download...")
+    logging.info(f"Triggering CSV download...")
     with page.expect_download() as download_info:
         # Instead of clicking text, we change the value of the dropdown directly.
         # Selecting 'CSV' on this specific form automatically submits the postback.
@@ -56,7 +56,7 @@ def download_csv_from_url(page, name, url, timestamp):
     save_path = os.path.join(data_dir, f"{name}_{timestamp}.csv")
     
     download.save_as(save_path)
-    logging.info(f"✅ Download completed: {save_path}")
+    logging.info(f"Download completed: {save_path}")
     return save_path
 
 def merge_csvs(data_dir, timestamp):
@@ -66,7 +66,7 @@ def merge_csvs(data_dir, timestamp):
     div_file = os.path.join(data_dir, f"division_area_performance_{timestamp}.csv")
     
     if not (os.path.exists(club_file) and os.path.exists(district_file) and os.path.exists(div_file)):
-        logging.error("❌ Cannot merge: Not all CSV files were downloaded.")
+        logging.error("Cannot merge: Not all CSV files were downloaded.")
         return
         
     try:
@@ -92,9 +92,9 @@ def merge_csvs(data_dir, timestamp):
         os.remove(club_file)
         os.remove(district_file)
         os.remove(div_file)
-        logging.info("🗑️ Deleted individual CSV files to save space.")
+        logging.info("Deleted individual CSV files to save space.")
     except Exception as e:
-        logging.error(f"❌ Failed to merge CSVs: {e}")
+        logging.error(f"Failed to merge CSVs: {e}")
 
 def run_toastmasters_pipeline():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -107,13 +107,13 @@ def run_toastmasters_pipeline():
             try:
                 download_csv_from_url(page, target_name, target_url, timestamp)
             except Exception as e:
-                logging.error(f"❌ Failed processing {target_name}: {str(e)}")
+                logging.error(f"Failed processing {target_name}: {str(e)}")
                 
         browser.close()
         
     data_dir = os.path.join(os.getcwd(), "data")
     merge_csvs(data_dir, timestamp)
-    logging.info("🎉 Automation pipeline execution complete!")
+    logging.info("Automation pipeline execution complete!")
 
 if __name__ == "__main__":
     setup_logging()
