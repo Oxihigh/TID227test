@@ -1,0 +1,14 @@
+2026-07-12 14:46:37,643 - INFO - 🌐 Navigating to district_performance...
+2026-07-12 14:47:01,534 - ERROR - ❌ Failed processing district_performance: Page.goto: net::ERR_CONNECTION_TIMED_OUT at https://dashboards.toastmasters.org/District.aspx?id=121
+Call log:
+  - navigating to "https://dashboards.toastmasters.org/District.aspx?id=121", waiting until "load"
+
+2026-07-12 14:47:01,536 - INFO - 🌐 Navigating to division_area_performance...
+2026-07-12 14:47:01,754 - ERROR - ❌ Failed processing division_area_performance: Page.goto: net::ERR_CONNECTION_TIMED_OUT at https://dashboards.toastmasters.org/Division.aspx?id=121
+Call log:
+  - navigating to "https://dashboards.toastmasters.org/Division.aspx?id=121", waiting until "load"
+
+2026-07-12 14:47:01,755 - INFO - 🌐 Navigating to club_performance...
+2026-07-12 14:47:25,578 - ERROR - Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
