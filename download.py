@@ -86,7 +86,7 @@ def merge_csvs(data_dir, timestamp):
         
         master_file = os.path.join(data_dir, f"master_performance_{timestamp}.csv")
         merged.to_csv(master_file, index=False)
-        logging.info(f"✅ Merged master file created: {master_file}")
+        logging.info(f"Merged master file created: {master_file}")
         
         # Delete original 3 CSVs
         os.remove(club_file)
