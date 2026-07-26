@@ -37,11 +37,8 @@
         </div>
 
         <nav class="top-nav-menu">
-            <button class="top-nav-btn active" data-view="overview">
-                <i class='bx bx-grid-alt'></i> Overview
-            </button>
-            <button class="top-nav-btn" data-view="sept-renewal">
-                <i class='bx bx-file'></i> Dues Renewal Report
+            <button class="top-nav-btn active" data-view="growth">
+                <i class='bx bx-trending-up'></i> Growth Dashboard
             </button>
             <button class="top-nav-btn" data-view="campaigns">
                 <i class='bx bx-trophy'></i> Awards & Campaigns
@@ -58,133 +55,143 @@
     <!-- Main Content Container -->
     <div class="app-container">
         <main class="main-content">
-            <!-- VIEW 1: OVERVIEW DASHBOARD -->
-            <div id="view-overview" class="dashboard-view active-view">
+            <!-- VIEW 1: GROWTH DASHBOARD (MAIN EXECUTIVE VIEW) -->
+            <div id="view-growth" class="dashboard-view active-view">
                 <header class="page-header">
-                    <h1>District 227 Growth Performance</h1>
-                    <p class="subtitle">Real-time performance analytics & growth metrics for District 227</p>
+                    <div class="report-tag">Executive Summary</div>
+                    <h1>District 227 Growth Dashboard</h1>
+                    <p class="subtitle">Comprehensive growth analytics combining primary dashboard metrics and internal pipeline sources</p>
                 </header>
 
-                <!-- KPIs -->
-                <section class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="kpi-icon blue"><i class='bx bx-building-house'></i></div>
-                        <div class="kpi-data">
-                            <h3 id="kpi-total-clubs">...</h3>
-                            <p>Total Clubs</p>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-icon maroon"><i class='bx bx-user-pin'></i></div>
-                        <div class="kpi-data">
-                            <h3 id="kpi-active-members">...</h3>
-                            <p>Active Members</p>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-icon yellow"><i class='bx bx-trending-up'></i></div>
-                        <div class="kpi-data">
-                            <h3 id="kpi-avg-goals">...</h3>
-                            <p>Avg. Goals Met</p>
-                        </div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-icon blue"><i class='bx bx-award'></i></div>
-                        <div class="kpi-data">
-                            <h3 id="kpi-distinguished">...</h3>
-                            <p>Distinguished Clubs</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Charts Grid -->
-                <section class="charts-grid">
-                    <div class="chart-card">
-                        <h3 class="chart-title">Club Status Overview</h3>
-                        <div class="chart-container">
-                            <canvas id="statusChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3 class="chart-title">Goals Met vs Net Growth</h3>
-                        <div class="chart-container">
-                            <canvas id="scatterChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card span-2">
-                        <h3 class="chart-title">Top 10 Clubs by Net Growth</h3>
-                        <div class="table-container">
-                            <table id="top-clubs-table">
-                                <thead>
-                                    <tr>
-                                        <th>Club Name</th>
-                                        <th>Div/Area</th>
-                                        <th>Base</th>
-                                        <th>Active</th>
-                                        <th>Net Growth</th>
-                                        <th>Goals</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- VIEW 2: DUES RENEWAL REPORT (BOTH SEPTEMBER & MARCH) -->
-            <div id="view-sept-renewal" class="dashboard-view hidden-view">
-                <header class="page-header">
-                    <div class="report-tag">September & March Renewal Report</div>
-                    <h1>Semi-Annual Dues Renewal Breakdown</h1>
-                    <p class="subtitle">Multi-level report analyzing base members, single renewals, and double renewals for September & March periods</p>
-                </header>
-
+                <!-- SECTION 1: DISTRICT VIEW -->
                 <section class="table-section">
                     <div class="table-header-controls">
-                        <h3 class="chart-title">Dashboard Summary</h3>
+                        <h3 class="chart-title"><i class='bx bx-globe'></i> DISTRICT VIEW</h3>
+                    </div>
+
+                    <!-- Primary Dashboard Metrics (From Toastmasters Data) -->
+                    <div class="metric-group-title">PRIMARY DASHBOARD METRICS</div>
+                    <div class="kpi-grid mb-4">
+                        <div class="kpi-card highlight-yellow">
+                            <div class="kpi-icon blue"><i class='bx bx-building'></i></div>
+                            <div class="kpi-data">
+                                <h3 id="growth-base-club">...</h3>
+                                <p>Base Clubs</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card highlight-yellow">
+                            <div class="kpi-icon maroon"><i class='bx bx-building-house'></i></div>
+                            <div class="kpi-data">
+                                <h3 id="growth-active-club">...</h3>
+                                <p>Active Clubs</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card highlight-yellow">
+                            <div class="kpi-icon yellow"><i class='bx bx-wallet'></i></div>
+                            <div class="kpi-data">
+                                <h3 id="growth-base-payments">...</h3>
+                                <p>Base Payments</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card highlight-yellow">
+                            <div class="kpi-icon blue"><i class='bx bx-dollar-circle'></i></div>
+                            <div class="kpi-data">
+                                <h3 id="growth-active-payments">...</h3>
+                                <p>Active Payments</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card highlight-yellow">
+                            <div class="kpi-icon maroon"><i class='bx bx-group'></i></div>
+                            <div class="kpi-data">
+                                <h3 id="growth-new-members">...</h3>
+                                <p>New Members</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Internal Source DB Metrics (Placeholders) -->
+                    <div class="metric-group-title">INTERNAL SOURCE DB METRICS</div>
+                    <div class="kpi-grid mb-4">
+                        <div class="kpi-card">
+                            <div class="kpi-icon blue"><i class='bx bx-plus-circle'></i></div>
+                            <div class="kpi-data">
+                                <h3>5</h3>
+                                <p>New Clubs</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon maroon"><i class='bx bx-git-repo-forked'></i></div>
+                            <div class="kpi-data">
+                                <h3>25</h3>
+                                <p># Active Leads Pursued</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon yellow"><i class='bx bx-slideshow'></i></div>
+                            <div class="kpi-data">
+                                <h3>11</h3>
+                                <p># Demo Meetings Completed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Club Activity Metrics (Placeholders) -->
+                    <div class="metric-group-title">SECONDARY CLUB ACTIVITY METRICS</div>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-icon blue"><i class='bx bx-link'></i></div>
+                            <div class="kpi-data">
+                                <h3>23</h3>
+                                <p># Linker Meets</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon maroon"><i class='bx bx-door-open'></i></div>
+                            <div class="kpi-data">
+                                <h3>5</h3>
+                                <p># Open House</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon yellow"><i class='bx bx-microphone'></i></div>
+                            <div class="kpi-data">
+                                <h3>2</h3>
+                                <p># Speechcraft Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: DIV/AREA/CLUB ROLLED-UP VIEW -->
+                <section class="table-section">
+                    <div class="table-header-controls">
+                        <h3 class="chart-title"><i class='bx bx-layer'></i> DIV / AREA / CLUB ROLLED-UP VIEW</h3>
                         <div class="filter-controls">
                             <div class="level-btn-group">
-                                <button class="level-btn active" data-level="district">District</button>
-                                <button class="level-btn" data-level="div">Division</button>
-                                <button class="level-btn" data-level="area">Area</button>
-                                <button class="level-btn" data-level="club">Club</button>
+                                <button class="level-btn growth-level-btn active" data-level="div">Division View</button>
+                                <button class="level-btn growth-level-btn" data-level="area">Area View</button>
+                                <button class="level-btn growth-level-btn" data-level="club">Club View</button>
                             </div>
-                            <input type="text" id="sept-renewal-search" placeholder="Filter entity name..." class="tmi-input">
+                            <input type="text" id="growth-search" placeholder="Search entity..." class="tmi-input">
                         </div>
                     </div>
 
                     <div class="table-container">
-                        <table id="sept-renewal-dashboard-table">
+                        <table id="growth-rollup-table">
                             <thead>
                                 <tr>
-                                    <th id="th-dashboard-entity">Dashboard (Entity)</th>
-                                    <th>Base Members</th>
-                                    <th>Sept Single</th>
-                                    <th>Sept Double</th>
-                                    <th>Sept %</th>
-                                    <th>March Single</th>
-                                    <th>March Double</th>
-                                    <th>March %</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="table-section">
-                    <div class="table-header-controls">
-                        <h3 class="chart-title">Report Summary (Member / 2800+ Level)</h3>
-                    </div>
-                    <div class="table-container">
-                        <table id="sept-renewal-report-table">
-                            <thead>
-                                <tr>
-                                    <th>Renewal Period / Level</th>
-                                    <th>Single Renewal</th>
-                                    <th>Double Renewal</th>
-                                    <th>Total Renewals</th>
+                                    <th id="th-growth-entity">Entity Name</th>
+                                    <th>Base Clubs</th>
+                                    <th>Active Clubs</th>
+                                    <th>Base Payments</th>
+                                    <th>Active Payments</th>
+                                    <th>New Members</th>
+                                    <th>New Clubs</th>
+                                    <th>Leads Pursued</th>
+                                    <th>Demo Meets</th>
+                                    <th>Linker Meets</th>
+                                    <th>Open House</th>
+                                    <th>Speechcraft</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -193,11 +200,11 @@
                 </section>
             </div>
 
-            <!-- VIEW 3: AWARDS & CAMPAIGNS TRACKER -->
+            <!-- VIEW 2: AWARDS & CAMPAIGNS TRACKER -->
             <div id="view-campaigns" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Awards & Campaign Tracker</h1>
-                    <p class="subtitle">Track Smedley Award, Talk Up Toastmasters, and Beat the Clock progress</p>
+                    <p class="subtitle">Track Smedley Award, Talk Up Toastmasters, Beat the Clock, Single Renewal & Double Renewal awards</p>
                 </header>
 
                 <section class="kpi-grid">
@@ -206,7 +213,7 @@
                         <div class="kpi-data">
                             <h3 id="award-smedley-count">...</h3>
                             <p>Smedley Award Achieved</p>
-                            <span class="sub-target" id="award-smedley-target">Goal: 5 new members</span>
+                            <span class="sub-target">Goal: 5 new members (Aug-Sep)</span>
                         </div>
                     </div>
                     <div class="kpi-card clickable-card" id="card-talkup">
@@ -214,7 +221,7 @@
                         <div class="kpi-data">
                             <h3 id="award-talkup-count">...</h3>
                             <p>Talk Up Toastmasters</p>
-                            <span class="sub-target" id="award-talkup-target">Goal: 5 new members</span>
+                            <span class="sub-target">Goal: 5 new members (Feb-Mar)</span>
                         </div>
                     </div>
                     <div class="kpi-card clickable-card" id="card-clock">
@@ -222,25 +229,43 @@
                         <div class="kpi-data">
                             <h3 id="award-clock-count">...</h3>
                             <p>Beat the Clock</p>
-                            <span class="sub-target" id="award-clock-target">Goal: 5 new members</span>
+                            <span class="sub-target">Goal: 5 new members (May-Jun)</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card clickable-card" id="card-single-renew">
+                        <div class="kpi-icon blue"><i class='bx bx-check-shield'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="award-single-renew-count">...</h3>
+                            <p>Single Renewal Award</p>
+                            <span class="sub-target">Renewed for September</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card clickable-card" id="card-double-renew">
+                        <div class="kpi-icon maroon"><i class='bx bxs-badge-check'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="award-double-renew-count">...</h3>
+                            <p>Double Renewal Award</p>
+                            <span class="sub-target">Renewed Sep & March</span>
                         </div>
                     </div>
                 </section>
 
                 <section class="table-section">
                     <div class="table-header-controls">
-                        <h3 class="chart-title">Membership Campaign Breakdown</h3>
+                        <h3 class="chart-title">Membership & Renewal Awards Breakdown</h3>
                         <div class="filter-controls">
                             <select id="campaign-select" class="tmi-select">
-                                <option value="all">All Campaigns</option>
+                                <option value="all">All Awards</option>
                                 <option value="smedley">Smedley Award</option>
                                 <option value="talkup">Talk Up Toastmasters</option>
                                 <option value="clock">Beat the Clock</option>
+                                <option value="single">Single Renewal Award</option>
+                                <option value="double">Double Renewal Award</option>
                             </select>
                             <select id="campaign-filter-status" class="tmi-select">
                                 <option value="all">All Clubs</option>
-                                <option value="achieved">Achieved (Yes)</option>
-                                <option value="pending">In Progress (No)</option>
+                                <option value="achieved">Achieved</option>
+                                <option value="pending">In Progress</option>
                             </select>
                             <input type="text" id="campaign-search" placeholder="Search club or div..." class="tmi-input">
                         </div>
@@ -253,11 +278,10 @@
                                     <th>Club Name</th>
                                     <th>Div / Area</th>
                                     <th>Smedley Status</th>
-                                    <th>Members Needed (Smedley)</th>
                                     <th>Talk Up Status</th>
-                                    <th>Members Needed (Talk Up)</th>
                                     <th>Beat the Clock Status</th>
-                                    <th>Members Needed (Clock)</th>
+                                    <th>Single Renewal Award</th>
+                                    <th>Double Renewal Award</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -266,7 +290,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 4: RENEWALS TRACKER -->
+            <!-- VIEW 3: RENEWALS TRACKER -->
             <div id="view-renewals" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Dues Renewal Performance Tracker</h1>
@@ -334,7 +358,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 5: CLUB GROWTH DIRECTOR OFFICE VISION & MISSION -->
+            <!-- VIEW 4: CLUB GROWTH DIRECTOR OFFICE VISION & MISSION -->
             <div id="view-vision" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Office of the Club Growth Director</h1>

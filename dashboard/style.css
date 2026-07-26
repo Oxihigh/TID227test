@@ -217,8 +217,23 @@ body {
     color: var(--tmi-maroon);
 }
 
-.clickable-card {
-    cursor: pointer;
+.metric-group-title {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--tmi-blue);
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.highlight-yellow {
+    border-top: 4px solid var(--tmi-yellow) !important;
+    background: #FFFDF0 !important;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
 }
 
 /* Table Section & Charts Grid */
