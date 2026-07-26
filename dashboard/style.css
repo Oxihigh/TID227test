@@ -109,33 +109,6 @@ body {
     background: var(--tmi-maroon);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
-
-.navbar-status {
-    display: flex;
-    align-items: center;
-}
-
-.sync-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(16, 185, 129, 0.15);
-    color: #34D399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #34D399;
-    box-shadow: 0 0 6px #34D399;
-}
-
 /* App Container */
 .app-container {
     max-width: 1400px;
