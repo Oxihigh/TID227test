@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Store loaded global data
     let globalClubData = [];
 
+    // Chart instances for Overview
+    let statusChartInstance = null;
+    let scatterChartInstance = null;
+
     // View Navigation Switcher
     const navButtons = document.querySelectorAll('.top-nav-btn');
     const views = document.querySelectorAll('.dashboard-view');
@@ -96,18 +100,159 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAllViews(data) {
         const validData = data.filter(row => row['Club Name']);
 
-        // 1. Executive Growth Dashboard (Main View)
+        // 1. Overview Dashboard (KPIs, Doughnut Chart, Scatter Chart, Top 10 Clubs Table)
+        renderOverview(validData);
+
+        // 2. Growth Dashboard (Excel Structure View)
         renderGrowthDashboard(validData);
 
-        // 2. Awards & Campaigns View (Includes Smedley, Talk Up, Beat Clock, Single & Double Renewals)
+        // 3. Awards & Campaigns View (Includes Smedley, Talk Up, Beat Clock, Single & Double Renewals)
         renderCampaignsView(validData);
 
-        // 3. Renewals Tracker View
+        // 4. Renewals Tracker View
         renderRenewalsView(validData);
     }
 
     /* ----------------------------------------------------
-       1. EXECUTIVE GROWTH DASHBOARD (MATCHING EXCEL IMAGE)
+       1. OVERVIEW DASHBOARD (RESTORED MAIN OVERVIEW)
+    ---------------------------------------------------- */
+    function renderOverview(data) {
+        const totalClubs = data.length;
+        const totalActiveMembers = data.reduce((acc, row) => {
+            const act = row['Active Members'] ?? row['Active Membership'] ?? 0;
+            return acc + Number(act);
+        }, 0);
+
+        let totalGoals = 0;
+        let distCount = 0;
+        const clubStatuses = {};
+        const scatterData = [];
+
+        data.forEach(row => {
+            const goals = Number(row['Goals Met'] ?? row['Goals'] ?? 0);
+            totalGoals += goals;
+
+            const distStatus = String(row['Distinguished Status'] ?? row['Distinguished'] ?? 'None');
+            if (distStatus.includes('Distinguished') || distStatus === 'Yes' || distStatus === 'P' || distStatus === 'S' || distStatus === 'M') {
+                distCount++;
+            }
+
+            const clubStatus = String(row['Club Status'] ?? 'Active');
+            clubStatuses[clubStatus] = (clubStatuses[clubStatus] || 0) + 1;
+
+            const base = Number(row['Mem. Base'] ?? row['Base Membership'] ?? 0);
+            const active = Number(row['Active Members'] ?? row['Active Membership'] ?? 0);
+            const netGrowth = row['Net Growth'] ?? (active - base);
+
+            scatterData.push({
+                x: netGrowth,
+                y: goals,
+                clubName: row['Club Name']
+            });
+        });
+
+        const avgGoals = totalClubs > 0 ? (totalGoals / totalClubs).toFixed(1) : 0;
+
+        document.getElementById('kpi-total-clubs').textContent = totalClubs;
+        document.getElementById('kpi-active-members').textContent = totalActiveMembers.toLocaleString();
+        document.getElementById('kpi-avg-goals').textContent = avgGoals;
+        document.getElementById('kpi-distinguished').textContent = distCount;
+
+        updateStatusChart(clubStatuses);
+        updateScatterChart(scatterData);
+        updateTopClubsTable(data);
+    }
+
+    function updateStatusChart(dataObj) {
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        if (statusChartInstance) statusChartInstance.destroy();
+
+        statusChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(dataObj),
+                datasets: [{
+                    data: Object.values(dataObj),
+                    backgroundColor: ['#004165', '#772432', '#EF4444', '#F59E0B'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#1F2937' } } },
+                cutout: '70%'
+            }
+        });
+    }
+
+    function updateScatterChart(dataArray) {
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+        if (scatterChartInstance) scatterChartInstance.destroy();
+
+        scatterChartInstance = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    data: dataArray,
+                    backgroundColor: 'rgba(0, 65, 101, 0.7)',
+                    borderColor: '#004165',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.raw.clubName}: Growth(${ctx.raw.x}), Goals(${ctx.raw.y})`
+                        }
+                    }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Net Growth', color: '#4B5563' }, grid: { color: '#E5E7EB' }, ticks: { color: '#4B5563' } },
+                    y: { title: { display: true, text: 'Goals Met', color: '#4B5563' }, grid: { color: '#E5E7EB' }, ticks: { color: '#4B5563' } }
+                }
+            }
+        });
+    }
+
+    function updateTopClubsTable(data) {
+        const tbody = document.querySelector('#top-clubs-table tbody');
+        tbody.innerHTML = '';
+
+        const formatted = data.map(club => {
+            const base = Number(club['Mem. Base'] ?? club['Base Membership'] ?? 0);
+            const active = Number(club['Active Members'] ?? club['Active Membership'] ?? 0);
+            const netGrowth = club['Net Growth'] ?? (active - base);
+            return { ...club, base, active, netGrowth };
+        });
+
+        const sorted = [...formatted].sort((a, b) => b.netGrowth - a.netGrowth);
+        const top10 = sorted.slice(0, 10);
+
+        top10.forEach(club => {
+            const tr = document.createElement('tr');
+            const net = club.netGrowth;
+            const cls = net > 0 ? 'positive' : (net < 0 ? 'negative' : '');
+            const sign = net > 0 ? '+' : '';
+
+            tr.innerHTML = `
+                <td><strong>${club['Club Name']}</strong></td>
+                <td>Div ${club['Division']} / Area ${club['Area']}</td>
+                <td>${club.base}</td>
+                <td>${club.active}</td>
+                <td class="${cls}">${sign}${net}</td>
+                <td>${club['Goals Met'] ?? club['Goals'] ?? 0}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    /* ----------------------------------------------------
+       2. EXECUTIVE GROWTH DASHBOARD (MATCHING EXCEL IMAGE)
     ---------------------------------------------------- */
     function renderGrowthDashboard(data) {
         let baseClubsCount = data.length;
@@ -270,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       2. AWARDS & CAMPAIGNS TRACKER (INCLUDES SINGLE & DOUBLE RENEWALS)
+       3. AWARDS & CAMPAIGNS TRACKER (INCLUDES SINGLE & DOUBLE RENEWALS)
     ---------------------------------------------------- */
     function renderCampaignsView(data) {
         let smedleyCount = 0;
@@ -418,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       3. RENEWALS TRACKER
+       4. RENEWALS TRACKER
     ---------------------------------------------------- */
     function renderRenewalsView(data) {
         let totalSeptRenewals = 0;

@@ -37,7 +37,10 @@
         </div>
 
         <nav class="top-nav-menu">
-            <button class="top-nav-btn active" data-view="growth">
+            <button class="top-nav-btn active" data-view="overview">
+                <i class='bx bx-grid-alt'></i> Overview
+            </button>
+            <button class="top-nav-btn" data-view="growth">
                 <i class='bx bx-trending-up'></i> Growth Dashboard
             </button>
             <button class="top-nav-btn" data-view="campaigns">
@@ -55,8 +58,82 @@
     <!-- Main Content Container -->
     <div class="app-container">
         <main class="main-content">
-            <!-- VIEW 1: GROWTH DASHBOARD (MAIN EXECUTIVE VIEW) -->
-            <div id="view-growth" class="dashboard-view active-view">
+            <!-- VIEW 1: OVERVIEW DASHBOARD (OLD OVERVIEW RESTORED) -->
+            <div id="view-overview" class="dashboard-view active-view">
+                <header class="page-header">
+                    <h1>District 227 Performance Overview</h1>
+                    <p class="subtitle">Official Toastmasters International performance analytics & growth metrics</p>
+                </header>
+
+                <!-- KPIs -->
+                <section class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon blue"><i class='bx bx-building-house'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-total-clubs">...</h3>
+                            <p>Total Clubs</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon maroon"><i class='bx bx-user-pin'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-active-members">...</h3>
+                            <p>Active Members</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon yellow"><i class='bx bx-trending-up'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-avg-goals">...</h3>
+                            <p>Avg. Goals Met</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon blue"><i class='bx bx-award'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-distinguished">...</h3>
+                            <p>Distinguished Clubs</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Charts Grid -->
+                <section class="charts-grid">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Club Status Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3 class="chart-title">Goals Met vs Net Growth</h3>
+                        <div class="chart-container">
+                            <canvas id="scatterChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card span-2">
+                        <h3 class="chart-title">Top 10 Clubs by Net Growth</h3>
+                        <div class="table-container">
+                            <table id="top-clubs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Club Name</th>
+                                        <th>Div/Area</th>
+                                        <th>Base</th>
+                                        <th>Active</th>
+                                        <th>Net Growth</th>
+                                        <th>Goals</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- VIEW 2: GROWTH DASHBOARD (EXCEL STRUCTURE VIEW) -->
+            <div id="view-growth" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <div class="report-tag">Executive Summary</div>
                     <h1>District 227 Growth Dashboard</h1>
@@ -200,7 +277,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 2: AWARDS & CAMPAIGNS TRACKER -->
+            <!-- VIEW 3: AWARDS & CAMPAIGNS TRACKER -->
             <div id="view-campaigns" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Awards & Campaign Tracker</h1>
@@ -290,7 +367,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 3: RENEWALS TRACKER -->
+            <!-- VIEW 4: RENEWALS TRACKER -->
             <div id="view-renewals" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Dues Renewal Performance Tracker</h1>
@@ -358,7 +435,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 4: CLUB GROWTH DIRECTOR OFFICE VISION & MISSION -->
+            <!-- VIEW 5: CLUB GROWTH DIRECTOR OFFICE VISION & MISSION -->
             <div id="view-vision" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>Office of the Club Growth Director</h1>
