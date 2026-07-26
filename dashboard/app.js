@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let scatterChartInstance = null;
 
     // View Navigation Switcher
-    const navButtons = document.querySelectorAll('.nav-btn');
+    const navButtons = document.querySelectorAll('.top-nav-btn');
     const views = document.querySelectorAll('.dashboard-view');
 
     navButtons.forEach(btn => {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return res.json();
                 })
                 .then(data => {
-                    uploadStatus.textContent = 'Synced live dataset';
+                    if (uploadStatus) uploadStatus.textContent = 'Synced live dataset';
                     globalClubData = data;
                     renderAllViews(data);
                 })
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function tryNextExcel(index) {
             if (index >= excelPaths.length) {
-                uploadStatus.textContent = 'Waiting for dataset pipeline...';
+                if (uploadStatus) uploadStatus.textContent = 'Waiting for dataset pipeline...';
                 return;
             }
             fetch(excelPaths[index])
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return res.arrayBuffer();
                 })
                 .then(buffer => {
-                    uploadStatus.textContent = 'Synced live dataset';
+                    if (uploadStatus) uploadStatus.textContent = 'Synced live dataset';
                     parseWorkbookBuffer(buffer);
                 })
                 .catch(() => {
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             globalClubData = jsonData;
             renderAllViews(jsonData);
         } catch (err) {
-            uploadStatus.textContent = 'Error parsing dataset.';
+            if (uploadStatus) uploadStatus.textContent = 'Error parsing dataset.';
             console.error(err);
         }
     }

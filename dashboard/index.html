@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>District 227 - Toastmasters International Club Growth Dashboard</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="toastmasters logo.jpg">
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -23,50 +26,50 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Top Navigation Header -->
+    <header class="top-navbar">
+        <div class="navbar-brand">
+            <img src="toastmasters logo.jpg" alt="Toastmasters International Logo" class="tmi-logo-img">
+            <div class="brand-titles">
+                <h2>District 227</h2>
+                <span>Club Growth Dashboard</span>
+            </div>
+        </div>
+
+        <nav class="top-nav-menu">
+            <button class="top-nav-btn active" data-view="overview">
+                <i class='bx bx-grid-alt'></i> Overview
+            </button>
+            <button class="top-nav-btn" data-view="sept-renewal">
+                <i class='bx bx-file'></i> Sept Renewal Report
+            </button>
+            <button class="top-nav-btn" data-view="campaigns">
+                <i class='bx bx-trophy'></i> Awards & Campaigns
+            </button>
+            <button class="top-nav-btn" data-view="renewals">
+                <i class='bx bx-refresh'></i> Renewals Tracker
+            </button>
+            <button class="top-nav-btn" data-view="vision">
+                <i class='bx bx-target-lock'></i> Vision & Mission
+            </button>
+        </nav>
+
+        <div class="navbar-status">
+            <div class="sync-status">
+                <span class="status-dot"></span>
+                <span id="sync-text">Live Sync Active</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
     <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="tmi-logo">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Toastmasters_International_logo.svg" alt="Toastmasters International Logo" class="tmi-logo-img">
-                </div>
-                <div>
-                    <h2>Club Growth</h2>
-                    <span class="brand-sub">District 227</span>
-                </div>
-            </div>
-
-            <nav class="nav-menu">
-                <button class="nav-btn active" data-view="overview">
-                    <i class='bx bx-grid-alt'></i> Overview Dashboard
-                </button>
-                <button class="nav-btn" data-view="sept-renewal">
-                    <i class='bx bx-file'></i> Sept Renewal Report
-                </button>
-                <button class="nav-btn" data-view="campaigns">
-                    <i class='bx bx-trophy'></i> Awards & Campaigns
-                </button>
-                <button class="nav-btn" data-view="renewals">
-                    <i class='bx bx-refresh'></i> Renewals Tracker
-                </button>
-            </nav>
-            
-            <div class="upload-section">
-                <div class="sync-status">
-                    <span class="status-dot"></span>
-                    <span id="sync-text">Live Auto-Sync Active</span>
-                </div>
-                <p id="upload-status" class="status-text">Fetching latest script data...</p>
-            </div>
-        </aside>
-
-        <!-- Main Content Views -->
         <main class="main-content">
             <!-- VIEW 1: OVERVIEW DASHBOARD -->
             <div id="view-overview" class="dashboard-view active-view">
-                <header class="top-header">
-                    <h1>District 227 - Club Growth Dashboard</h1>
-                    <p class="subtitle">Official Toastmasters International District 227 performance & growth metrics</p>
+                <header class="page-header">
+                    <h1>District 227 Growth Performance</h1>
+                    <p class="subtitle">Real-time performance analytics & growth metrics for District 227</p>
                 </header>
 
                 <!-- KPIs -->
@@ -138,7 +141,7 @@
 
             <!-- VIEW 2: SEPT RENEWAL REPORT -->
             <div id="view-sept-renewal" class="dashboard-view hidden-view">
-                <header class="top-header">
+                <header class="page-header">
                     <div class="report-tag">Sept Renewal Report</div>
                     <h1>September Renewal Breakdown</h1>
                     <p class="subtitle">Multi-level report analyzing base members, single renewals, and double renewals for District 227</p>
@@ -196,7 +199,7 @@
 
             <!-- VIEW 3: AWARDS & CAMPAIGNS TRACKER -->
             <div id="view-campaigns" class="dashboard-view hidden-view">
-                <header class="top-header">
+                <header class="page-header">
                     <h1>Awards & Campaign Tracker</h1>
                     <p class="subtitle">Track Smedley Award, Talk Up Toastmasters, and Beat the Clock progress</p>
                 </header>
@@ -269,7 +272,7 @@
 
             <!-- VIEW 4: RENEWALS TRACKER -->
             <div id="view-renewals" class="dashboard-view hidden-view">
-                <header class="top-header">
+                <header class="page-header">
                     <h1>Dues Renewal Performance Tracker</h1>
                     <p class="subtitle">Monitor September & March membership renewals performance for District 227</p>
                 </header>
@@ -331,6 +334,53 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- VIEW 5: CLUB GROWTH DIRECTOR OFFICE VISION & MISSION -->
+            <div id="view-vision" class="dashboard-view hidden-view">
+                <header class="page-header">
+                    <h1>Office of the Club Growth Director</h1>
+                    <p class="subtitle">District 227 Strategic Vision, Mission & Growth Framework</p>
+                </header>
+
+                <section class="vision-mission-grid">
+                    <div class="vision-card">
+                        <div class="card-icon-header">
+                            <i class='bx bx-compass'></i>
+                            <h3>Our Vision</h3>
+                        </div>
+                        <p class="card-lead">To expand the reach of Toastmasters by building resilient, vibrant clubs and empowering every member to achieve personal and leadership excellence across District 227.</p>
+                    </div>
+
+                    <div class="mission-card">
+                        <div class="card-icon-header">
+                            <i class='bx bx-target-lock'></i>
+                            <h3>Our Mission</h3>
+                        </div>
+                        <p class="card-lead">We support club chartering, foster membership retention, promote marketing initiatives, and empower district leaders with actionable performance insights to achieve Distinguished District success.</p>
+                    </div>
+                </section>
+
+                <section class="pillars-section">
+                    <h3 class="section-title">Strategic Growth Pillars</h3>
+                    <div class="pillars-grid">
+                        <div class="pillar-card">
+                            <div class="pillar-number">01</div>
+                            <h4>Club Chartering & Extension</h4>
+                            <p>Expanding the footprint of District 227 by building strong corporate and community clubs to bring communication and leadership opportunities to new audiences.</p>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-number">02</div>
+                            <h4>Membership Building & Retention</h4>
+                            <p>Championing Smedley, Talk Up Toastmasters, and Beat the Clock membership campaigns while supporting clubs with membership retention tools.</p>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-number">03</div>
+                            <h4>Data-Driven District Leadership</h4>
+                            <p>Equipping District 227 Division and Area Directors with live performance analytics to provide targeted support to clubs in need.</p>
+                        </div>
                     </div>
                 </section>
             </div>
