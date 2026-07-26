@@ -16,7 +16,10 @@
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- PapaParse for CSV parsing -->
+    <!-- SheetJS for Excel & CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <!-- PapaParse for CSV fallback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
     <!-- Chart.js for visualization -->
@@ -37,11 +40,11 @@
             </div>
             
             <div class="upload-section">
-                <label for="csv-upload" class="upload-btn">
-                    <i class='bx bx-cloud-upload'></i> Upload CSV Data
+                <label for="excel-upload" class="upload-btn">
+                    <i class='bx bx-file'></i> Upload Excel Data
                 </label>
-                <input type="file" id="csv-upload" accept=".csv" class="hidden-input">
-                <p id="upload-status" class="status-text">Waiting for data...</p>
+                <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" class="hidden-input">
+                <p id="upload-status" class="status-text">Loading dataset...</p>
             </div>
         </aside>
 
@@ -130,7 +133,7 @@
                 <div class="empty-state glass-panel">
                     <i class='bx bx-data'></i>
                     <h2>No Data Loaded</h2>
-                    <p>Please upload your <code>master_performance_*.csv</code> file using the sidebar to generate insights.</p>
+                    <p>Please upload your <code>District 121 - Mastersheet.xlsx</code> file using the sidebar to generate insights.</p>
                 </div>
             </div>
         </main>
