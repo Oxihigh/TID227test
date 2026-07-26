@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Overview View
         renderOverview(validData);
 
-        // 2. Sept Renewal Report View (New!)
+        // 2. Sept Renewal Report View
         renderSeptRenewalReport(validData);
 
         // 3. Awards & Campaigns View
@@ -173,14 +173,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 labels: Object.keys(dataObj),
                 datasets: [{
                     data: Object.values(dataObj),
-                    backgroundColor: ['#10B981', '#3b82f6', '#EF4444', '#F59E0B'],
+                    backgroundColor: ['#004165', '#772432', '#EF4444', '#F59E0B'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC' } } },
+                plugins: { legend: { position: 'bottom', labels: { color: '#1F2937' } } },
                 cutout: '70%'
             }
         });
@@ -195,8 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 datasets: [{
                     data: dataArray,
-                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(0, 65, 101, 0.7)',
+                    borderColor: '#004165',
                     pointRadius: 5
                 }]
             },
@@ -212,8 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 },
                 scales: {
-                    x: { title: { display: true, text: 'Net Growth', color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
-                    y: { title: { display: true, text: 'Goals Met', color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } }
+                    x: { title: { display: true, text: 'Net Growth', color: '#4B5563' }, grid: { color: '#E5E7EB' }, ticks: { color: '#4B5563' } },
+                    y: { title: { display: true, text: 'Goals Met', color: '#4B5563' }, grid: { color: '#E5E7EB' }, ticks: { color: '#4B5563' } }
                 }
             }
         });
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       2. SEPT RENEWAL REPORT (NEW FEATURE)
+       2. SEPT RENEWAL REPORT
     ---------------------------------------------------- */
     function renderSeptRenewalReport(data) {
         const levelBtns = document.querySelectorAll('.level-btn');
