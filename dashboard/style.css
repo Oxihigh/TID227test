@@ -118,28 +118,33 @@ body {
     gap: 12px;
 }
 
-.upload-btn {
+.sync-status {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    color: white;
-    padding: 12px 20px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 10px 16px;
     border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
-.upload-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
 }
 
-.hidden-input {
-    display: none;
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
 }
 
 .status-text {

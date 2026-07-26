@@ -16,11 +16,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- SheetJS for Excel & CSV parsing -->
+    <!-- SheetJS for Excel parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    
-    <!-- PapaParse for CSV fallback -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
     <!-- Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -40,11 +37,11 @@
             </div>
             
             <div class="upload-section">
-                <label for="excel-upload" class="upload-btn">
-                    <i class='bx bx-file'></i> Upload Excel Data
-                </label>
-                <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" class="hidden-input">
-                <p id="upload-status" class="status-text">Loading dataset...</p>
+                <div class="sync-status">
+                    <span class="status-dot"></span>
+                    <span id="sync-text">Live Auto-Sync Active</span>
+                </div>
+                <p id="upload-status" class="status-text">Fetching latest script data...</p>
             </div>
         </aside>
 
@@ -52,43 +49,43 @@
         <main class="main-content">
             <header class="top-header">
                 <h1>District Performance Dashboard</h1>
-                <p class="subtitle">Gain meaningful insights into your Toastmasters clubs</p>
+                <p class="subtitle">Live insights generated directly from Toastmasters District pipeline</p>
             </header>
 
             <!-- KPIs -->
-            <section class="kpi-grid hidden" id="dashboard-content">
+            <section class="kpi-grid" id="dashboard-content">
                 <div class="kpi-card glass-panel">
                     <div class="kpi-icon"><i class='bx bx-building-house'></i></div>
                     <div class="kpi-data">
-                        <h3 id="kpi-total-clubs">-</h3>
+                        <h3 id="kpi-total-clubs">...</h3>
                         <p>Total Clubs</p>
                     </div>
                 </div>
                 <div class="kpi-card glass-panel">
                     <div class="kpi-icon"><i class='bx bx-user-pin'></i></div>
                     <div class="kpi-data">
-                        <h3 id="kpi-active-members">-</h3>
+                        <h3 id="kpi-active-members">...</h3>
                         <p>Active Members</p>
                     </div>
                 </div>
                 <div class="kpi-card glass-panel">
                     <div class="kpi-icon"><i class='bx bx-trending-up'></i></div>
                     <div class="kpi-data">
-                        <h3 id="kpi-avg-goals">-</h3>
+                        <h3 id="kpi-avg-goals">...</h3>
                         <p>Avg. Goals Met</p>
                     </div>
                 </div>
                 <div class="kpi-card glass-panel">
                     <div class="kpi-icon"><i class='bx bx-award'></i></div>
                     <div class="kpi-data">
-                        <h3 id="kpi-distinguished">-</h3>
+                        <h3 id="kpi-distinguished">...</h3>
                         <p>Distinguished Clubs</p>
                     </div>
                 </div>
             </section>
 
             <!-- Charts -->
-            <section class="charts-grid hidden" id="charts-content">
+            <section class="charts-grid" id="charts-content">
                 <div class="chart-card glass-panel span-2">
                     <h3 class="chart-title">Distinguished Status Distribution</h3>
                     <div class="chart-container">
@@ -128,14 +125,6 @@
                     </div>
                 </div>
             </section>
-            
-            <div id="welcome-message" class="welcome-message">
-                <div class="empty-state glass-panel">
-                    <i class='bx bx-data'></i>
-                    <h2>No Data Loaded</h2>
-                    <p>Please upload your <code>District 121 - Mastersheet.xlsx</code> file using the sidebar to generate insights.</p>
-                </div>
-            </div>
         </main>
     </div>
 

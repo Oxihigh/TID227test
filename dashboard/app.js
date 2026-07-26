@@ -1,73 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadInput = document.getElementById('excel-upload');
     const uploadStatus = document.getElementById('upload-status');
-    const welcomeMessage = document.getElementById('welcome-message');
-    const dashboardContent = document.getElementById('dashboard-content');
-    const chartsContent = document.getElementById('charts-content');
 
     let distChartInstance = null;
     let statusChartInstance = null;
     let scatterChartInstance = null;
 
-    // Auto-load District 121 - Mastersheet.xlsx on page load
     autoLoadMastersheet();
 
-    uploadInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            uploadStatus.textContent = `Loading ${file.name}...`;
-            parseFile(file);
-        }
-    });
-
     function autoLoadMastersheet() {
-        const paths = ['./District 121 - Mastersheet.xlsx', '../District 121 - Mastersheet.xlsx'];
-        
-        function tryNextPath(index) {
-            if (index >= paths.length) {
-                uploadStatus.textContent = 'Waiting for file upload...';
+        const jsonPaths = ['./District 121 - Mastersheet.json', 'District 121 - Mastersheet.json', '../District 121 - Mastersheet.json'];
+        const excelPaths = ['./District 121 - Mastersheet.xlsx', 'District 121 - Mastersheet.xlsx', '../District 121 - Mastersheet.xlsx'];
+
+        function tryNextJson(index) {
+            if (index >= jsonPaths.length) {
+                tryNextExcel(0);
                 return;
             }
-            fetch(paths[index])
+            fetch(jsonPaths[index])
                 .then(res => {
-                    if (!res.ok) throw new Error('Not found');
-                    return res.arrayBuffer();
+                    if (!res.ok) throw new Error('JSON not found');
+                    return res.json();
                 })
-                .then(buffer => {
-                    uploadStatus.textContent = 'Auto-loaded District 121 - Mastersheet.xlsx';
-                    parseWorkbookBuffer(buffer);
+                .then(data => {
+                    uploadStatus.textContent = 'Auto-synced live dataset';
+                    processData(data);
                 })
                 .catch(() => {
-                    tryNextPath(index + 1);
+                    tryNextJson(index + 1);
                 });
         }
 
-        tryNextPath(0);
-    }
-
-    function parseFile(file) {
-        const name = file.name.toLowerCase();
-        if (name.endsWith('.csv')) {
-            Papa.parse(file, {
-                header: true,
-                dynamicTyping: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    uploadStatus.textContent = `Loaded ${results.data.length} records.`;
-                    processData(results.data);
-                },
-                error: function(err) {
-                    uploadStatus.textContent = 'Error parsing CSV.';
-                    console.error(err);
-                }
-            });
-        } else {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                parseWorkbookBuffer(e.target.result);
-            };
-            reader.readAsArrayBuffer(file);
+        function tryNextExcel(index) {
+            if (index >= excelPaths.length) {
+                uploadStatus.textContent = 'Waiting for background pipeline...';
+                return;
+            }
+            fetch(excelPaths[index])
+                .then(res => {
+                    if (!res.ok) throw new Error('Excel not found');
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    uploadStatus.textContent = 'Auto-synced live dataset';
+                    parseWorkbookBuffer(buffer);
+                })
+                .catch(() => {
+                    tryNextExcel(index + 1);
+                });
         }
+
+        tryNextJson(0);
     }
 
     function parseWorkbookBuffer(buffer) {
@@ -79,10 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const worksheet = workbook.Sheets[targetSheet];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            uploadStatus.textContent = `Loaded sheet '${targetSheet}' with ${jsonData.length} records.`;
+            uploadStatus.textContent = `Auto-synced live dataset`;
             processData(jsonData);
         } catch (err) {
-            uploadStatus.textContent = 'Error parsing Excel file.';
+            uploadStatus.textContent = 'Error loading dataset.';
             console.error(err);
         }
     }
@@ -143,10 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStatusChart(clubStatuses);
         updateScatterChart(scatterData);
         updateTopClubsTable(validData);
-
-        welcomeMessage.classList.add('hidden');
-        dashboardContent.classList.remove('hidden');
-        chartsContent.classList.remove('hidden');
     }
 
     function updateDistinguishedChart(dataObj) {

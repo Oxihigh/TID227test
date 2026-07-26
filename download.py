@@ -667,12 +667,15 @@ def process_downloaded_data(data_dir, workspace_dir, timestamp):
     output_excel_path = os.path.join(workspace_dir, "District 121 - Mastersheet.xlsx")
     generate_excel_mastersheet(final_df, output_excel_path)
 
-    # Save copy inside dashboard directory for static website serving
+    # Save copies inside dashboard directory for direct automatic serving
     dashboard_dir = os.path.join(workspace_dir, "dashboard")
     if os.path.exists(dashboard_dir):
         dashboard_excel_path = os.path.join(dashboard_dir, "District 121 - Mastersheet.xlsx")
         shutil.copy2(output_excel_path, dashboard_excel_path)
-        logging.info(f"✅ Copied Mastersheet Excel to dashboard folder: {dashboard_excel_path}")
+        
+        dashboard_json_path = os.path.join(dashboard_dir, "District 121 - Mastersheet.json")
+        final_df.to_json(dashboard_json_path, orient="records", indent=2)
+        logging.info(f"✅ Copied Mastersheet Excel & JSON to dashboard folder.")
 
     # Clean raw temp CSV files
     for f in raw_files:
