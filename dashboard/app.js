@@ -1,10 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
     const uploadStatus = document.getElementById('upload-status');
+    
+    // Store loaded global data
+    let globalClubData = [];
 
+    // Chart instances
     let distChartInstance = null;
     let statusChartInstance = null;
     let scatterChartInstance = null;
 
+    // View Navigation Switcher
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const views = document.querySelectorAll('.dashboard-view');
+
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetView = btn.getAttribute('data-view');
+
+            navButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            views.forEach(v => {
+                if (v.id === `view-${targetView}`) {
+                    v.classList.remove('hidden-view');
+                    v.classList.add('active-view');
+                } else {
+                    v.classList.add('hidden-view');
+                    v.classList.remove('active-view');
+                }
+            });
+        });
+    });
+
+    // Auto-load data on page start
     autoLoadMastersheet();
 
     function autoLoadMastersheet() {
@@ -22,8 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return res.json();
                 })
                 .then(data => {
-                    uploadStatus.textContent = 'Auto-synced live dataset';
-                    processData(data);
+                    uploadStatus.textContent = 'Synced live dataset';
+                    globalClubData = data;
+                    renderAllViews(data);
                 })
                 .catch(() => {
                     tryNextJson(index + 1);
@@ -32,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function tryNextExcel(index) {
             if (index >= excelPaths.length) {
-                uploadStatus.textContent = 'Waiting for background pipeline...';
+                uploadStatus.textContent = 'Waiting for dataset pipeline...';
                 return;
             }
             fetch(excelPaths[index])
@@ -41,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return res.arrayBuffer();
                 })
                 .then(buffer => {
-                    uploadStatus.textContent = 'Auto-synced live dataset';
+                    uploadStatus.textContent = 'Synced live dataset';
                     parseWorkbookBuffer(buffer);
                 })
                 .catch(() => {
@@ -61,52 +90,65 @@ document.addEventListener('DOMContentLoaded', () => {
             const worksheet = workbook.Sheets[targetSheet];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            uploadStatus.textContent = `Auto-synced live dataset`;
-            processData(jsonData);
+            globalClubData = jsonData;
+            renderAllViews(jsonData);
         } catch (err) {
-            uploadStatus.textContent = 'Error loading dataset.';
+            uploadStatus.textContent = 'Error parsing dataset.';
             console.error(err);
         }
     }
 
-    function processData(data) {
+    function renderAllViews(data) {
         const validData = data.filter(row => row['Club Name']);
 
-        const totalClubs = validData.length;
-        const totalActiveMembers = validData.reduce((acc, row) => {
+        // 1. Render Overview View
+        renderOverview(validData);
+
+        // 2. Render Awards & Campaigns View
+        renderCampaignsView(validData);
+
+        // 3. Render Renewals Tracker View
+        renderRenewalsView(validData);
+    }
+
+    /* ----------------------------------------------------
+       1. OVERVIEW DASHBOARD
+    ---------------------------------------------------- */
+    function renderOverview(data) {
+        const totalClubs = data.length;
+        const totalActiveMembers = data.reduce((acc, row) => {
             const act = row['Active Members'] ?? row['Active Membership'] ?? 0;
             return acc + Number(act);
         }, 0);
-        
+
         let totalGoals = 0;
         let distCount = 0;
-        
         const distStatuses = {};
         const clubStatuses = {};
         const scatterData = [];
-        
-        validData.forEach(row => {
+
+        data.forEach(row => {
             const goals = Number(row['Goals Met'] ?? row['Goals'] ?? 0);
             totalGoals += goals;
-            
+
             const distStatus = String(row['Distinguished Status'] ?? row['Distinguished'] ?? 'None');
             if (distStatus.includes('Distinguished') || distStatus === 'Yes' || distStatus === 'P' || distStatus === 'S' || distStatus === 'M') {
                 distCount++;
             }
-            
+
             const distLabel = distStatus === 'P' ? "President's Distinguished" :
                               (distStatus === 'S' ? 'Select Distinguished' :
                               (distStatus === 'M' ? 'Distinguished' : distStatus));
-                              
+
             distStatuses[distLabel] = (distStatuses[distLabel] || 0) + 1;
-            
+
             const clubStatus = String(row['Club Status'] ?? 'Active');
             clubStatuses[clubStatus] = (clubStatuses[clubStatus] || 0) + 1;
-            
+
             const base = Number(row['Mem. Base'] ?? row['Base Membership'] ?? 0);
             const active = Number(row['Active Members'] ?? row['Active Membership'] ?? 0);
             const netGrowth = row['Net Growth'] ?? (active - base);
-            
+
             scatterData.push({
                 x: netGrowth,
                 y: goals,
@@ -124,23 +166,20 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDistinguishedChart(distStatuses);
         updateStatusChart(clubStatuses);
         updateScatterChart(scatterData);
-        updateTopClubsTable(validData);
+        updateTopClubsTable(data);
     }
 
     function updateDistinguishedChart(dataObj) {
         const ctx = document.getElementById('distinguishedChart').getContext('2d');
-        const labels = Object.keys(dataObj);
-        const data = Object.values(dataObj);
-
         if (distChartInstance) distChartInstance.destroy();
 
         distChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: Object.keys(dataObj),
                 datasets: [{
-                    label: 'Number of Clubs',
-                    data: data,
+                    label: 'Clubs',
+                    data: Object.values(dataObj),
                     backgroundColor: 'rgba(139, 92, 246, 0.8)',
                     borderRadius: 6
                 }]
@@ -150,15 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { 
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94A3B8' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#94A3B8' }
-                    }
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
                 }
             }
         });
@@ -166,31 +198,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateStatusChart(dataObj) {
         const ctx = document.getElementById('statusChart').getContext('2d');
-        const labels = Object.keys(dataObj);
-        const data = Object.values(dataObj);
-
         if (statusChartInstance) statusChartInstance.destroy();
 
         statusChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: labels,
+                labels: Object.keys(dataObj),
                 datasets: [{
-                    data: data,
+                    data: Object.values(dataObj),
                     backgroundColor: ['#10B981', '#3b82f6', '#EF4444', '#F59E0B'],
-                    borderWidth: 0,
-                    hoverOffset: 4
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: '#F8FAFC', padding: 20 }
-                    }
-                },
+                plugins: { legend: { position: 'bottom', labels: { color: '#F8FAFC' } } },
                 cutout: '70%'
             }
         });
@@ -198,20 +221,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateScatterChart(dataArray) {
         const ctx = document.getElementById('scatterChart').getContext('2d');
-
         if (scatterChartInstance) scatterChartInstance.destroy();
 
         scatterChartInstance = new Chart(ctx, {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: 'Clubs',
                     data: dataArray,
                     backgroundColor: 'rgba(59, 130, 246, 0.6)',
                     borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    pointRadius: 5
                 }]
             },
             options: {
@@ -221,23 +240,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                return `${context.raw.clubName}: Growth(${context.raw.x}), Goals(${context.raw.y})`;
-                            }
+                            label: (ctx) => `${ctx.raw.clubName}: Growth(${ctx.raw.x}), Goals(${ctx.raw.y})`
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        title: { display: true, text: 'Net Growth', color: '#94A3B8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94A3B8' }
-                    },
-                    y: {
-                        title: { display: true, text: 'Goals Met', color: '#94A3B8' },
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94A3B8' }
-                    }
+                    x: { title: { display: true, text: 'Net Growth', color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                    y: { title: { display: true, text: 'Goals Met', color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } }
                 }
             }
         });
@@ -247,32 +256,235 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = document.querySelector('#top-clubs-table tbody');
         tbody.innerHTML = '';
 
-        const formattedData = data.map(club => {
+        const formatted = data.map(club => {
             const base = Number(club['Mem. Base'] ?? club['Base Membership'] ?? 0);
             const active = Number(club['Active Members'] ?? club['Active Membership'] ?? 0);
             const netGrowth = club['Net Growth'] ?? (active - base);
             return { ...club, base, active, netGrowth };
         });
 
-        const sorted = [...formattedData].sort((a, b) => b.netGrowth - a.netGrowth);
+        const sorted = [...formatted].sort((a, b) => b.netGrowth - a.netGrowth);
         const top10 = sorted.slice(0, 10);
 
         top10.forEach(club => {
             const tr = document.createElement('tr');
-            
-            const netGrowth = club.netGrowth;
-            const growthClass = netGrowth > 0 ? 'positive' : (netGrowth < 0 ? 'negative' : '');
-            const growthSign = netGrowth > 0 ? '+' : '';
+            const net = club.netGrowth;
+            const cls = net > 0 ? 'positive' : (net < 0 ? 'negative' : '');
+            const sign = net > 0 ? '+' : '';
 
             tr.innerHTML = `
                 <td><strong>${club['Club Name']}</strong></td>
                 <td>Div ${club['Division']} / Area ${club['Area']}</td>
                 <td>${club.base}</td>
                 <td>${club.active}</td>
-                <td class="${growthClass}">${growthSign}${netGrowth}</td>
+                <td class="${cls}">${sign}${net}</td>
                 <td>${club['Goals Met'] ?? club['Goals'] ?? 0}</td>
             `;
             tbody.appendChild(tr);
         });
+    }
+
+    /* ----------------------------------------------------
+       2. AWARDS & CAMPAIGNS TRACKER
+    ---------------------------------------------------- */
+    function renderCampaignsView(data) {
+        let smedleyCount = 0;
+        let talkupCount = 0;
+        let clockCount = 0;
+
+        data.forEach(row => {
+            if (row['Smedley Award Eligibility'] === 'Yes') smedleyCount++;
+            if (row['Talk Up Eligibility'] === 'Yes') talkupCount++;
+            if (row['Beat the Clock Eligibility'] === 'Yes') clockCount++;
+        });
+
+        document.getElementById('award-smedley-count').textContent = `${smedleyCount} / ${data.length}`;
+        document.getElementById('award-talkup-count').textContent = `${talkupCount} / ${data.length}`;
+        document.getElementById('award-clock-count').textContent = `${clockCount} / ${data.length}`;
+
+        // Event listeners for filters
+        const campaignSelect = document.getElementById('campaign-select');
+        const statusSelect = document.getElementById('campaign-filter-status');
+        const searchInput = document.getElementById('campaign-search');
+
+        function updateCampaignTable() {
+            const selectedCampaign = campaignSelect.value;
+            const selectedStatus = statusSelect.value;
+            const searchVal = searchInput.value.toLowerCase().trim();
+
+            const tbody = document.querySelector('#campaign-table tbody');
+            tbody.innerHTML = '';
+
+            const filtered = data.filter(club => {
+                const name = String(club['Club Name'] || '').toLowerCase();
+                const div = String(club['Division'] || '').toLowerCase();
+                const area = String(club['Area'] || '').toLowerCase();
+                const matchesSearch = name.includes(searchVal) || div.includes(searchVal) || area.includes(searchVal);
+
+                if (!matchesSearch) return false;
+
+                const smedleyYes = club['Smedley Award Eligibility'] === 'Yes';
+                const talkupYes = club['Talk Up Eligibility'] === 'Yes';
+                const clockYes = club['Beat the Clock Eligibility'] === 'Yes';
+
+                if (selectedCampaign === 'smedley') {
+                    if (selectedStatus === 'achieved') return smedleyYes;
+                    if (selectedStatus === 'pending') return !smedleyYes;
+                } else if (selectedCampaign === 'talkup') {
+                    if (selectedStatus === 'achieved') return talkupYes;
+                    if (selectedStatus === 'pending') return !talkupYes;
+                } else if (selectedCampaign === 'clock') {
+                    if (selectedStatus === 'achieved') return clockYes;
+                    if (selectedStatus === 'pending') return !clockYes;
+                } else {
+                    if (selectedStatus === 'achieved') return smedleyYes || talkupYes || clockYes;
+                    if (selectedStatus === 'pending') return !smedleyYes || !talkupYes || !clockYes;
+                }
+                return true;
+            });
+
+            filtered.forEach(club => {
+                const tr = document.createElement('tr');
+                const smedleyYes = club['Smedley Award Eligibility'] === 'Yes';
+                const talkupYes = club['Talk Up Eligibility'] === 'Yes';
+                const clockYes = club['Beat the Clock Eligibility'] === 'Yes';
+
+                const smedleyGoal = club['Smedley Award Goal'] ?? (smedleyYes ? 0 : 5);
+                const talkupGoal = club['Talk Up Goal'] ?? (talkupYes ? 0 : 5);
+                const clockGoal = club['Beat the Clock Goal'] ?? (clockYes ? 0 : 5);
+
+                tr.innerHTML = `
+                    <td><strong>${club['Club Name']}</strong></td>
+                    <td>Div ${club['Division']} / Area ${club['Area']}</td>
+                    <td><span class="badge ${smedleyYes ? 'badge-yes' : 'badge-no'}">${smedleyYes ? 'Achieved' : 'In Progress'}</span></td>
+                    <td><strong>${smedleyGoal}</strong> new members</td>
+                    <td><span class="badge ${talkupYes ? 'badge-yes' : 'badge-no'}">${talkupYes ? 'Achieved' : 'In Progress'}</span></td>
+                    <td><strong>${talkupGoal}</strong> new members</td>
+                    <td><span class="badge ${clockYes ? 'badge-yes' : 'badge-no'}">${clockYes ? 'Achieved' : 'In Progress'}</span></td>
+                    <td><strong>${clockGoal}</strong> new members</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        campaignSelect.addEventListener('change', updateCampaignTable);
+        statusSelect.addEventListener('change', updateCampaignTable);
+        searchInput.addEventListener('input', updateCampaignTable);
+
+        // Clickable Cards to auto-filter
+        document.getElementById('card-smedley').addEventListener('click', () => {
+            campaignSelect.value = 'smedley';
+            updateCampaignTable();
+        });
+        document.getElementById('card-talkup').addEventListener('click', () => {
+            campaignSelect.value = 'talkup';
+            updateCampaignTable();
+        });
+        document.getElementById('card-clock').addEventListener('click', () => {
+            campaignSelect.value = 'clock';
+            updateCampaignTable();
+        });
+
+        updateCampaignTable();
+    }
+
+    /* ----------------------------------------------------
+       3. RENEWALS TRACKER
+    ---------------------------------------------------- */
+    function renderRenewalsView(data) {
+        let totalSeptRenewals = 0;
+        let totalSeptBase = 0;
+        let totalMarchRenewals = 0;
+
+        data.forEach(row => {
+            totalSeptRenewals += Number(row['September Renewals'] ?? row['Oct. Ren.'] ?? 0);
+            totalSeptBase += Number(row['Base Membership'] ?? row['Mem. Base'] ?? 0);
+            totalMarchRenewals += Number(row['March Renewals'] ?? row['Apr. Ren.'] ?? 0);
+        });
+
+        const septRate = totalSeptBase > 0 ? ((totalSeptRenewals / totalSeptBase) * 100).toFixed(1) : 0;
+        const marchRate = totalSeptBase > 0 ? ((totalMarchRenewals / totalSeptBase) * 100).toFixed(1) : 0;
+
+        document.getElementById('renew-sept-total').textContent = totalSeptRenewals.toLocaleString();
+        document.getElementById('renew-sept-pct').textContent = `Renewal Rate: ${septRate}%`;
+
+        document.getElementById('renew-march-total').textContent = totalMarchRenewals.toLocaleString();
+        document.getElementById('renew-march-pct').textContent = `Renewal Rate: ${marchRate}%`;
+
+        const periodSelect = document.getElementById('renewal-period-select');
+        const statusSelect = document.getElementById('renewal-status-select');
+        const searchInput = document.getElementById('renewal-search');
+
+        function updateRenewalTable() {
+            const period = periodSelect.value;
+            const statusFilter = statusSelect.value;
+            const searchVal = searchInput.value.toLowerCase().trim();
+
+            const tbody = document.querySelector('#renewal-table tbody');
+            tbody.innerHTML = '';
+
+            const filtered = data.filter(club => {
+                const name = String(club['Club Name'] || '').toLowerCase();
+                const div = String(club['Division'] || '').toLowerCase();
+                const area = String(club['Area'] || '').toLowerCase();
+                const matchesSearch = name.includes(searchVal) || div.includes(searchVal) || area.includes(searchVal);
+
+                if (!matchesSearch) return false;
+
+                const septStatus = String(club['September Renewal Status'] || 'Renewals not here');
+                const marchStatus = String(club['March Renewal Status'] || 'Renewals not here');
+
+                if (statusFilter !== 'all') {
+                    if (period === 'september' && septStatus !== statusFilter) return false;
+                    if (period === 'march' && marchStatus !== statusFilter) return false;
+                    if (period === 'all' && septStatus !== statusFilter && marchStatus !== statusFilter) return false;
+                }
+                return true;
+            });
+
+            filtered.forEach(club => {
+                const tr = document.createElement('tr');
+
+                const base = Number(club['Base Membership'] ?? club['Mem. Base'] ?? 0);
+                const active = Number(club['Active Membership'] ?? club['Active Members'] ?? 0);
+
+                const sept = Number(club['September Renewals'] ?? club['Oct. Ren.'] ?? 0);
+                const septPctRaw = club['September Renewals %'] ?? (base > 0 ? sept / base : 0);
+                const septPctFormatted = (Number(septPctRaw) * 100).toFixed(1) + '%';
+                const septStatus = String(club['September Renewal Status'] || 'Renewals not here');
+
+                const march = Number(club['March Renewals'] ?? club['Apr. Ren.'] ?? 0);
+                const marchPctRaw = club['March Renewals %'] ?? (base > 0 ? march / base : 0);
+                const marchPctFormatted = (Number(marchPctRaw) * 100).toFixed(1) + '%';
+                const marchStatus = String(club['March Renewal Status'] || 'Renewals not here');
+
+                function getBadgeClass(status) {
+                    if (status === 'Active') return 'badge-active';
+                    if (status === 'Low') return 'badge-low';
+                    if (status === 'Ineligible') return 'badge-ineligible';
+                    return 'badge-pending';
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${club['Club Name']}</strong></td>
+                    <td>Div ${club['Division']} / Area ${club['Area']}</td>
+                    <td>${base}</td>
+                    <td>${active}</td>
+                    <td>${sept}</td>
+                    <td><strong>${septPctFormatted}</strong></td>
+                    <td><span class="badge ${getBadgeClass(septStatus)}">${septStatus}</span></td>
+                    <td>${march}</td>
+                    <td><strong>${marchPctFormatted}</strong></td>
+                    <td><span class="badge ${getBadgeClass(marchStatus)}">${marchStatus}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        periodSelect.addEventListener('change', updateRenewalTable);
+        statusSelect.addEventListener('change', updateRenewalTable);
+        searchInput.addEventListener('input', updateRenewalTable);
+
+        updateRenewalTable();
     }
 });

@@ -29,12 +29,24 @@
     </div>
 
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar glass-panel">
             <div class="sidebar-header">
                 <i class='bx bxs-bar-chart-alt-2 logo-icon'></i>
                 <h2>TM Insights</h2>
             </div>
+
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-view="overview">
+                    <i class='bx bx-grid-alt'></i> Overview Dashboard
+                </button>
+                <button class="nav-btn" data-view="campaigns">
+                    <i class='bx bx-trophy'></i> Awards & Campaigns
+                </button>
+                <button class="nav-btn" data-view="renewals">
+                    <i class='bx bx-refresh'></i> Renewals Tracker
+                </button>
+            </nav>
             
             <div class="upload-section">
                 <div class="sync-status">
@@ -45,86 +57,228 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Views -->
         <main class="main-content">
-            <header class="top-header">
-                <h1>District Performance Dashboard</h1>
-                <p class="subtitle">Live insights generated directly from Toastmasters District pipeline</p>
-            </header>
+            <!-- VIEW 1: OVERVIEW DASHBOARD -->
+            <div id="view-overview" class="dashboard-view active-view">
+                <header class="top-header">
+                    <h1>District Performance Dashboard</h1>
+                    <p class="subtitle">Live insights generated directly from Toastmasters District pipeline</p>
+                </header>
 
-            <!-- KPIs -->
-            <section class="kpi-grid" id="dashboard-content">
-                <div class="kpi-card glass-panel">
-                    <div class="kpi-icon"><i class='bx bx-building-house'></i></div>
-                    <div class="kpi-data">
-                        <h3 id="kpi-total-clubs">...</h3>
-                        <p>Total Clubs</p>
+                <!-- KPIs -->
+                <section class="kpi-grid">
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon"><i class='bx bx-building-house'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-total-clubs">...</h3>
+                            <p>Total Clubs</p>
+                        </div>
                     </div>
-                </div>
-                <div class="kpi-card glass-panel">
-                    <div class="kpi-icon"><i class='bx bx-user-pin'></i></div>
-                    <div class="kpi-data">
-                        <h3 id="kpi-active-members">...</h3>
-                        <p>Active Members</p>
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon"><i class='bx bx-user-pin'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-active-members">...</h3>
+                            <p>Active Members</p>
+                        </div>
                     </div>
-                </div>
-                <div class="kpi-card glass-panel">
-                    <div class="kpi-icon"><i class='bx bx-trending-up'></i></div>
-                    <div class="kpi-data">
-                        <h3 id="kpi-avg-goals">...</h3>
-                        <p>Avg. Goals Met</p>
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon"><i class='bx bx-trending-up'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-avg-goals">...</h3>
+                            <p>Avg. Goals Met</p>
+                        </div>
                     </div>
-                </div>
-                <div class="kpi-card glass-panel">
-                    <div class="kpi-icon"><i class='bx bx-award'></i></div>
-                    <div class="kpi-data">
-                        <h3 id="kpi-distinguished">...</h3>
-                        <p>Distinguished Clubs</p>
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon"><i class='bx bx-award'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpi-distinguished">...</h3>
+                            <p>Distinguished Clubs</p>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Charts -->
-            <section class="charts-grid" id="charts-content">
-                <div class="chart-card glass-panel span-2">
-                    <h3 class="chart-title">Distinguished Status Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="distinguishedChart"></canvas>
+                <!-- Charts -->
+                <section class="charts-grid">
+                    <div class="chart-card glass-panel span-2">
+                        <h3 class="chart-title">Distinguished Status Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="distinguishedChart"></canvas>
+                        </div>
                     </div>
-                </div>
-                <div class="chart-card glass-panel">
-                    <h3 class="chart-title">Club Status Overview</h3>
-                    <div class="chart-container">
-                        <canvas id="statusChart"></canvas>
+                    <div class="chart-card glass-panel">
+                        <h3 class="chart-title">Club Status Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="statusChart"></canvas>
+                        </div>
                     </div>
-                </div>
-                <div class="chart-card glass-panel">
-                    <h3 class="chart-title">Goals Met vs Net Growth</h3>
-                    <div class="chart-container">
-                        <canvas id="scatterChart"></canvas>
+                    <div class="chart-card glass-panel">
+                        <h3 class="chart-title">Goals Met vs Net Growth</h3>
+                        <div class="chart-container">
+                            <canvas id="scatterChart"></canvas>
+                        </div>
                     </div>
-                </div>
-                <div class="chart-card glass-panel span-2">
-                    <h3 class="chart-title">Top 10 Clubs by Net Growth</h3>
+                    <div class="chart-card glass-panel span-2">
+                        <h3 class="chart-title">Top 10 Clubs by Net Growth</h3>
+                        <div class="table-container">
+                            <table id="top-clubs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Club Name</th>
+                                        <th>Div/Area</th>
+                                        <th>Base</th>
+                                        <th>Active</th>
+                                        <th>Net Growth</th>
+                                        <th>Goals</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- VIEW 2: AWARDS & CAMPAIGNS TRACKER -->
+            <div id="view-campaigns" class="dashboard-view hidden-view">
+                <header class="top-header">
+                    <h1>Awards & Campaign Tracker</h1>
+                    <p class="subtitle">Track Smedley Award, Talk Up Toastmasters, and Beat the Clock progress</p>
+                </header>
+
+                <section class="kpi-grid">
+                    <div class="kpi-card glass-panel clickable-card" id="card-smedley">
+                        <div class="kpi-icon gold"><i class='bx bxs-trophy'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="award-smedley-count">...</h3>
+                            <p>Smedley Award Achieved</p>
+                            <span class="sub-target" id="award-smedley-target">Goal: 5 new members</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-panel clickable-card" id="card-talkup">
+                        <div class="kpi-icon purple"><i class='bx bxs-megaphone'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="award-talkup-count">...</h3>
+                            <p>Talk Up Toastmasters</p>
+                            <span class="sub-target" id="award-talkup-target">Goal: 5 new members</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-panel clickable-card" id="card-clock">
+                        <div class="kpi-icon blue"><i class='bx bxs-time-five'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="award-clock-count">...</h3>
+                            <p>Beat the Clock</p>
+                            <span class="sub-target" id="award-clock-target">Goal: 5 new members</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="table-section glass-panel">
+                    <div class="table-header-controls">
+                        <h3 class="chart-title">Membership Campaign Breakdown</h3>
+                        <div class="filter-controls">
+                            <select id="campaign-select" class="glass-select">
+                                <option value="all">All Campaigns</option>
+                                <option value="smedley">Smedley Award</option>
+                                <option value="talkup">Talk Up Toastmasters</option>
+                                <option value="clock">Beat the Clock</option>
+                            </select>
+                            <select id="campaign-filter-status" class="glass-select">
+                                <option value="all">All Clubs</option>
+                                <option value="achieved">Achieved (Yes)</option>
+                                <option value="pending">In Progress (No)</option>
+                            </select>
+                            <input type="text" id="campaign-search" placeholder="Search club or div..." class="glass-input">
+                        </div>
+                    </div>
+
                     <div class="table-container">
-                        <table id="top-clubs-table">
+                        <table id="campaign-table">
                             <thead>
                                 <tr>
                                     <th>Club Name</th>
-                                    <th>Div/Area</th>
-                                    <th>Base</th>
-                                    <th>Active</th>
-                                    <th>Net Growth</th>
-                                    <th>Goals</th>
+                                    <th>Div / Area</th>
+                                    <th>Smedley Status</th>
+                                    <th>Members Needed (Smedley)</th>
+                                    <th>Talk Up Status</th>
+                                    <th>Members Needed (Talk Up)</th>
+                                    <th>Beat the Clock Status</th>
+                                    <th>Members Needed (Clock)</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Rows generated by JS -->
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
+
+            <!-- VIEW 3: RENEWALS TRACKER -->
+            <div id="view-renewals" class="dashboard-view hidden-view">
+                <header class="top-header">
+                    <h1>Dues Renewal Performance Tracker</h1>
+                    <p class="subtitle">Monitor September & March membership renewals performance</p>
+                </header>
+
+                <section class="kpi-grid">
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon green"><i class='bx bx-calendar-event'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="renew-sept-total">...</h3>
+                            <p>September Renewals Total</p>
+                            <span class="sub-target" id="renew-sept-pct">Rate: ...%</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass-panel">
+                        <div class="kpi-icon blue"><i class='bx bx-calendar-check'></i></div>
+                        <div class="kpi-data">
+                            <h3 id="renew-march-total">...</h3>
+                            <p>March Renewals Total</p>
+                            <span class="sub-target" id="renew-march-pct">Rate: ...%</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="table-section glass-panel">
+                    <div class="table-header-controls">
+                        <h3 class="chart-title">Club Renewal Statuses</h3>
+                        <div class="filter-controls">
+                            <select id="renewal-period-select" class="glass-select">
+                                <option value="all">All Periods</option>
+                                <option value="september">September Renewals</option>
+                                <option value="march">March Renewals</option>
+                            </select>
+                            <select id="renewal-status-select" class="glass-select">
+                                <option value="all">All Renewal Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="Low">Low</option>
+                                <option value="Ineligible">Ineligible</option>
+                                <option value="Renewals not here">Renewals Not Received</option>
+                            </select>
+                            <input type="text" id="renewal-search" placeholder="Search club..." class="glass-input">
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="renewal-table">
+                            <thead>
+                                <tr>
+                                    <th>Club Name</th>
+                                    <th>Div / Area</th>
+                                    <th>Base Mem.</th>
+                                    <th>Active Mem.</th>
+                                    <th>Sept Renewals</th>
+                                    <th>Sept Renewals %</th>
+                                    <th>Sept Status</th>
+                                    <th>March Renewals</th>
+                                    <th>March Renewals %</th>
+                                    <th>March Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
