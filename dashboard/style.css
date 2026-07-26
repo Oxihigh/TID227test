@@ -211,6 +211,20 @@ body {
     display: none !important;
 }
 
+.report-tag {
+    display: inline-block;
+    background: #10B981;
+    color: #0B0E14;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
 .top-header h1 {
     font-size: 2rem;
     font-weight: 700;
@@ -301,6 +315,37 @@ body {
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.level-btn-group {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+}
+
+.level-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.level-btn:hover {
+    color: white;
+}
+
+.level-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
 }
 
 .glass-select, .glass-input {

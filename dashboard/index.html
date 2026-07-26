@@ -40,6 +40,9 @@
                 <button class="nav-btn active" data-view="overview">
                     <i class='bx bx-grid-alt'></i> Overview Dashboard
                 </button>
+                <button class="nav-btn" data-view="sept-renewal">
+                    <i class='bx bx-file'></i> Sept Renewal Report
+                </button>
                 <button class="nav-btn" data-view="campaigns">
                     <i class='bx bx-trophy'></i> Awards & Campaigns
                 </button>
@@ -98,14 +101,8 @@
                     </div>
                 </section>
 
-                <!-- Charts -->
+                <!-- Charts Grid (Note: Distinguished Status Distribution chart removed as requested) -->
                 <section class="charts-grid">
-                    <div class="chart-card glass-panel span-2">
-                        <h3 class="chart-title">Distinguished Status Distribution</h3>
-                        <div class="chart-container">
-                            <canvas id="distinguishedChart"></canvas>
-                        </div>
-                    </div>
                     <div class="chart-card glass-panel">
                         <h3 class="chart-title">Club Status Overview</h3>
                         <div class="chart-container">
@@ -139,7 +136,66 @@
                 </section>
             </div>
 
-            <!-- VIEW 2: AWARDS & CAMPAIGNS TRACKER -->
+            <!-- VIEW 2: SEPT RENEWAL REPORT (NEW) -->
+            <div id="view-sept-renewal" class="dashboard-view hidden-view">
+                <header class="top-header">
+                    <div class="report-tag">Sept Renewal Report</div>
+                    <h1>September Renewal Breakdown</h1>
+                    <p class="subtitle">Multi-level report analyzing base members, single renewals, and double renewals</p>
+                </header>
+
+                <section class="table-section glass-panel">
+                    <div class="table-header-controls">
+                        <h3 class="chart-title">Dashboard Summary</h3>
+                        <div class="filter-controls">
+                            <div class="level-btn-group">
+                                <button class="level-btn active" data-level="district">District</button>
+                                <button class="level-btn" data-level="div">Division</button>
+                                <button class="level-btn" data-level="area">Area</button>
+                                <button class="level-btn" data-level="club">Club</button>
+                            </div>
+                            <input type="text" id="sept-renewal-search" placeholder="Filter entity name..." class="glass-input">
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="sept-renewal-dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th id="th-dashboard-entity">Dashboard (Entity)</th>
+                                    <th>Base Members</th>
+                                    <th>Single Renewal</th>
+                                    <th>Double Renewal</th>
+                                    <th>Sept Renewals %</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section 2: Member Level 2800+ Summary -->
+                <section class="table-section glass-panel">
+                    <div class="table-header-controls">
+                        <h3 class="chart-title">Report Summary (Member / 2800+ Level)</h3>
+                    </div>
+                    <div class="table-container">
+                        <table id="sept-renewal-report-table">
+                            <thead>
+                                <tr>
+                                    <th>Report Level</th>
+                                    <th>Single Renewal</th>
+                                    <th>Double Renewal</th>
+                                    <th>Total Renewals</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- VIEW 3: AWARDS & CAMPAIGNS TRACKER -->
             <div id="view-campaigns" class="dashboard-view hidden-view">
                 <header class="top-header">
                     <h1>Awards & Campaign Tracker</h1>
@@ -212,7 +268,7 @@
                 </section>
             </div>
 
-            <!-- VIEW 3: RENEWALS TRACKER -->
+            <!-- VIEW 4: RENEWALS TRACKER -->
             <div id="view-renewals" class="dashboard-view hidden-view">
                 <header class="top-header">
                     <h1>Dues Renewal Performance Tracker</h1>

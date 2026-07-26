@@ -142,6 +142,10 @@ def load_and_clean_data(data_dir, timestamp):
         'Total to Date': 'Total Payments'
     })
     
+    # Calculate Single vs Double Renewals logic for Sept Renewal Report
+    final_df['Single Renewal'] = final_df['September Renewals'].apply(lambda x: max(0, int(x)))
+    final_df['Double Renewal'] = 0
+    
     final_df = final_df.sort_values(by=['Division', 'Area', 'Club Number']).reset_index(drop=True)
     return final_df, club_files + district_files + div_files
 
@@ -156,19 +160,19 @@ def generate_excel_mastersheet(final_df, output_excel_path):
     
     headers = list(final_df.columns)
     ws_details.append(headers)
-    style_range(ws_details, "A1:M1", font=FONT_HEADER_WHITE, alignment=ALIGN_CENTER, fill=NAVY_FILL, border=THIN_BORDER)
+    style_range(ws_details, f"A1:{get_column_letter(len(headers))}1", font=FONT_HEADER_WHITE, alignment=ALIGN_CENTER, fill=NAVY_FILL, border=THIN_BORDER)
     
     for idx, row in final_df.iterrows():
         ws_details.append(list(row.values))
         row_num = idx + 2
         fill = ZEBRA_FILL if row_num % 2 == 0 else WHITE_FILL
-        style_range(ws_details, f"A{row_num}:M{row_num}", font=FONT_BODY, alignment=ALIGN_LEFT, fill=fill, border=THIN_BORDER)
+        style_range(ws_details, f"A{row_num}:{get_column_letter(len(headers))}{row_num}", font=FONT_BODY, alignment=ALIGN_LEFT, fill=fill, border=THIN_BORDER)
         ws_details[f"A{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"B{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"C{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"D{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"F{row_num}"].alignment = ALIGN_CENTER
-        for c in ["G", "H", "I", "J", "K", "L", "M"]:
+        for c in ["G", "H", "I", "J", "K", "L", "M", "N", "O"]:
             ws_details[f"{c}{row_num}"].number_format = "#,##0"
             ws_details[f"{c}{row_num}"].alignment = ALIGN_RIGHT
             

@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalClubData = [];
 
     // Chart instances
-    let distChartInstance = null;
     let statusChartInstance = null;
     let scatterChartInstance = null;
 
@@ -101,13 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAllViews(data) {
         const validData = data.filter(row => row['Club Name']);
 
-        // 1. Render Overview View
+        // 1. Overview View
         renderOverview(validData);
 
-        // 2. Render Awards & Campaigns View
+        // 2. Sept Renewal Report View (New!)
+        renderSeptRenewalReport(validData);
+
+        // 3. Awards & Campaigns View
         renderCampaignsView(validData);
 
-        // 3. Render Renewals Tracker View
+        // 4. Renewals Tracker View
         renderRenewalsView(validData);
     }
 
@@ -123,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let totalGoals = 0;
         let distCount = 0;
-        const distStatuses = {};
         const clubStatuses = {};
         const scatterData = [];
 
@@ -135,12 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (distStatus.includes('Distinguished') || distStatus === 'Yes' || distStatus === 'P' || distStatus === 'S' || distStatus === 'M') {
                 distCount++;
             }
-
-            const distLabel = distStatus === 'P' ? "President's Distinguished" :
-                              (distStatus === 'S' ? 'Select Distinguished' :
-                              (distStatus === 'M' ? 'Distinguished' : distStatus));
-
-            distStatuses[distLabel] = (distStatuses[distLabel] || 0) + 1;
 
             const clubStatus = String(row['Club Status'] ?? 'Active');
             clubStatuses[clubStatus] = (clubStatuses[clubStatus] || 0) + 1;
@@ -163,37 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('kpi-avg-goals').textContent = avgGoals;
         document.getElementById('kpi-distinguished').textContent = distCount;
 
-        updateDistinguishedChart(distStatuses);
         updateStatusChart(clubStatuses);
         updateScatterChart(scatterData);
         updateTopClubsTable(data);
-    }
-
-    function updateDistinguishedChart(dataObj) {
-        const ctx = document.getElementById('distinguishedChart').getContext('2d');
-        if (distChartInstance) distChartInstance.destroy();
-
-        distChartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(dataObj),
-                datasets: [{
-                    label: 'Clubs',
-                    data: Object.values(dataObj),
-                    backgroundColor: 'rgba(139, 92, 246, 0.8)',
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
-                }
-            }
-        });
     }
 
     function updateStatusChart(dataObj) {
@@ -285,7 +252,139 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       2. AWARDS & CAMPAIGNS TRACKER
+       2. SEPT RENEWAL REPORT (NEW FEATURE)
+    ---------------------------------------------------- */
+    function renderSeptRenewalReport(data) {
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const searchInput = document.getElementById('sept-renewal-search');
+        let currentLevel = 'district';
+
+        levelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                levelBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLevel = btn.getAttribute('data-level');
+                updateDashboardTable();
+            });
+        });
+
+        searchInput.addEventListener('input', updateDashboardTable);
+
+        function updateDashboardTable() {
+            const searchVal = searchInput.value.toLowerCase().trim();
+            const tbody = document.querySelector('#sept-renewal-dashboard-table tbody');
+            const thEntity = document.getElementById('th-dashboard-entity');
+            tbody.innerHTML = '';
+
+            let rowsToDisplay = [];
+
+            if (currentLevel === 'district') {
+                thEntity.textContent = 'Dashboard (District Level)';
+                let totBase = 0, totSingle = 0, totDouble = 0, totSept = 0;
+                data.forEach(c => {
+                    totBase += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    totSingle += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    totDouble += Number(c['Double Renewal'] ?? 0);
+                    totSept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                });
+                const pct = totBase > 0 ? ((totSept / totBase) * 100).toFixed(1) + '%' : '0.0%';
+                rowsToDisplay.push({ entity: 'District 121 Total', base: totBase, single: totSingle, double: totDouble, pct: pct });
+            } 
+            else if (currentLevel === 'div') {
+                thEntity.textContent = 'Dashboard (Division Level)';
+                const divMap = {};
+                data.forEach(c => {
+                    const d = String(c['Division'] || 'Unknown');
+                    if (!divMap[d]) divMap[d] = { base: 0, single: 0, double: 0, sept: 0 };
+                    divMap[d].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    divMap[d].single += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    divMap[d].double += Number(c['Double Renewal'] ?? 0);
+                    divMap[d].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                });
+                Object.keys(divMap).sort().forEach(d => {
+                    const item = divMap[d];
+                    const pct = item.base > 0 ? ((item.sept / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    rowsToDisplay.push({ entity: `Division ${d}`, base: item.base, single: item.single, double: item.double, pct: pct });
+                });
+            }
+            else if (currentLevel === 'area') {
+                thEntity.textContent = 'Dashboard (Area Level)';
+                const areaMap = {};
+                data.forEach(c => {
+                    const key = `Div ${c['Division']} / Area ${c['Area']}`;
+                    if (!areaMap[key]) areaMap[key] = { base: 0, single: 0, double: 0, sept: 0 };
+                    areaMap[key].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    areaMap[key].single += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    areaMap[key].double += Number(c['Double Renewal'] ?? 0);
+                    areaMap[key].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                });
+                Object.keys(areaMap).sort().forEach(a => {
+                    const item = areaMap[a];
+                    const pct = item.base > 0 ? ((item.sept / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    rowsToDisplay.push({ entity: a, base: item.base, single: item.single, double: item.double, pct: pct });
+                });
+            }
+            else {
+                thEntity.textContent = 'Dashboard (Club Level)';
+                data.forEach(c => {
+                    const base = Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    const single = Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    const double = Number(c['Double Renewal'] ?? 0);
+                    const sept = Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    const pct = base > 0 ? ((sept / base) * 100).toFixed(1) + '%' : '0.0%';
+                    rowsToDisplay.push({ entity: `${c['Club Name']} (Div ${c['Division']}/Area ${c['Area']})`, base: base, single: single, double: double, pct: pct });
+                });
+            }
+
+            const filteredRows = rowsToDisplay.filter(r => r.entity.toLowerCase().includes(searchVal));
+
+            filteredRows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${r.entity}</strong></td>
+                    <td>${r.base.toLocaleString()}</td>
+                    <td>${r.single.toLocaleString()}</td>
+                    <td>${r.double.toLocaleString()}</td>
+                    <td><strong>${r.pct}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateReportTable() {
+            const tbody = document.querySelector('#sept-renewal-report-table tbody');
+            tbody.innerHTML = '';
+
+            let totSingle = 0, totDouble = 0, totSept = 0;
+            data.forEach(c => {
+                totSingle += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                totDouble += Number(c['Double Renewal'] ?? 0);
+                totSept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+            });
+
+            const reportRows = [
+                { name: 'Member Level', single: totSingle, double: totDouble, total: totSept },
+                { name: '2800+ Target Level', single: totSingle >= 2800 ? 2800 : totSingle, double: totDouble, total: totSept }
+            ];
+
+            reportRows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.single.toLocaleString()}</td>
+                    <td>${r.double.toLocaleString()}</td>
+                    <td><strong>${r.total.toLocaleString()}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        updateDashboardTable();
+        updateReportTable();
+    }
+
+    /* ----------------------------------------------------
+       3. AWARDS & CAMPAIGNS TRACKER
     ---------------------------------------------------- */
     function renderCampaignsView(data) {
         let smedleyCount = 0;
@@ -302,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('award-talkup-count').textContent = `${talkupCount} / ${data.length}`;
         document.getElementById('award-clock-count').textContent = `${clockCount} / ${data.length}`;
 
-        // Event listeners for filters
         const campaignSelect = document.getElementById('campaign-select');
         const statusSelect = document.getElementById('campaign-filter-status');
         const searchInput = document.getElementById('campaign-search');
@@ -371,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
         statusSelect.addEventListener('change', updateCampaignTable);
         searchInput.addEventListener('input', updateCampaignTable);
 
-        // Clickable Cards to auto-filter
         document.getElementById('card-smedley').addEventListener('click', () => {
             campaignSelect.value = 'smedley';
             updateCampaignTable();
@@ -389,7 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       3. RENEWALS TRACKER
+       4. RENEWALS TRACKER
     ---------------------------------------------------- */
     function renderRenewalsView(data) {
         let totalSeptRenewals = 0;
