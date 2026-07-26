@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Overview View
         renderOverview(validData);
 
-        // 2. Sept Renewal Report View
+        // 2. Sept & March Renewal Report View
         renderSeptRenewalReport(validData);
 
         // 3. Awards & Campaigns View
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ----------------------------------------------------
-       2. SEPT RENEWAL REPORT
+       2. SEPT & MARCH RENEWAL REPORT
     ---------------------------------------------------- */
     function renderSeptRenewalReport(data) {
         const levelBtns = document.querySelectorAll('.level-btn');
@@ -280,31 +280,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentLevel === 'district') {
                 thEntity.textContent = 'Dashboard (District Level)';
-                let totBase = 0, totSingle = 0, totDouble = 0, totSept = 0;
+                let totBase = 0, septSingle = 0, septDouble = 0, septTotal = 0;
+                let marchSingle = 0, marchDouble = 0, marchTotal = 0;
+
                 data.forEach(c => {
                     totBase += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
-                    totSingle += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                    totDouble += Number(c['Double Renewal'] ?? 0);
-                    totSept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    septSingle += Number(c['Sept Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    septDouble += Number(c['Sept Double Renewal'] ?? 0);
+                    septTotal += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+
+                    marchSingle += Number(c['March Single Renewal'] ?? c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    marchDouble += Number(c['March Double Renewal'] ?? 0);
+                    marchTotal += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
                 });
-                const pct = totBase > 0 ? ((totSept / totBase) * 100).toFixed(1) + '%' : '0.0%';
-                rowsToDisplay.push({ entity: 'District 227 Total', base: totBase, single: totSingle, double: totDouble, pct: pct });
+
+                const septPct = totBase > 0 ? ((septTotal / totBase) * 100).toFixed(1) + '%' : '0.0%';
+                const marchPct = totBase > 0 ? ((marchTotal / totBase) * 100).toFixed(1) + '%' : '0.0%';
+
+                rowsToDisplay.push({ 
+                    entity: 'District 227 Total', 
+                    base: totBase, 
+                    septSingle, septDouble, septPct,
+                    marchSingle, marchDouble, marchPct 
+                });
             } 
             else if (currentLevel === 'div') {
                 thEntity.textContent = 'Dashboard (Division Level)';
                 const divMap = {};
                 data.forEach(c => {
                     const d = String(c['Division'] || 'Unknown');
-                    if (!divMap[d]) divMap[d] = { base: 0, single: 0, double: 0, sept: 0 };
+                    if (!divMap[d]) divMap[d] = { base: 0, sSingle: 0, sDouble: 0, sTotal: 0, mSingle: 0, mDouble: 0, mTotal: 0 };
                     divMap[d].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
-                    divMap[d].single += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                    divMap[d].double += Number(c['Double Renewal'] ?? 0);
-                    divMap[d].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    divMap[d].sSingle += Number(c['Sept Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    divMap[d].sDouble += Number(c['Sept Double Renewal'] ?? 0);
+                    divMap[d].sTotal += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    divMap[d].mSingle += Number(c['March Single Renewal'] ?? c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    divMap[d].mDouble += Number(c['March Double Renewal'] ?? 0);
+                    divMap[d].mTotal += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
                 });
                 Object.keys(divMap).sort().forEach(d => {
                     const item = divMap[d];
-                    const pct = item.base > 0 ? ((item.sept / item.base) * 100).toFixed(1) + '%' : '0.0%';
-                    rowsToDisplay.push({ entity: `Division ${d}`, base: item.base, single: item.single, double: item.double, pct: pct });
+                    const septPct = item.base > 0 ? ((item.sTotal / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    const marchPct = item.base > 0 ? ((item.mTotal / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    rowsToDisplay.push({ 
+                        entity: `Division ${d}`, 
+                        base: item.base, 
+                        septSingle: item.sSingle, septDouble: item.sDouble, septPct,
+                        marchSingle: item.mSingle, marchDouble: item.mDouble, marchPct 
+                    });
                 });
             }
             else if (currentLevel === 'area') {
@@ -312,27 +335,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 const areaMap = {};
                 data.forEach(c => {
                     const key = `Div ${c['Division']} / Area ${c['Area']}`;
-                    if (!areaMap[key]) areaMap[key] = { base: 0, single: 0, double: 0, sept: 0 };
+                    if (!areaMap[key]) areaMap[key] = { base: 0, sSingle: 0, sDouble: 0, sTotal: 0, mSingle: 0, mDouble: 0, mTotal: 0 };
                     areaMap[key].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
-                    areaMap[key].single += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                    areaMap[key].double += Number(c['Double Renewal'] ?? 0);
-                    areaMap[key].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    areaMap[key].sSingle += Number(c['Sept Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    areaMap[key].sDouble += Number(c['Sept Double Renewal'] ?? 0);
+                    areaMap[key].sTotal += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    areaMap[key].mSingle += Number(c['March Single Renewal'] ?? c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    areaMap[key].mDouble += Number(c['March Double Renewal'] ?? 0);
+                    areaMap[key].mTotal += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
                 });
                 Object.keys(areaMap).sort().forEach(a => {
                     const item = areaMap[a];
-                    const pct = item.base > 0 ? ((item.sept / item.base) * 100).toFixed(1) + '%' : '0.0%';
-                    rowsToDisplay.push({ entity: a, base: item.base, single: item.single, double: item.double, pct: pct });
+                    const septPct = item.base > 0 ? ((item.sTotal / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    const marchPct = item.base > 0 ? ((item.mTotal / item.base) * 100).toFixed(1) + '%' : '0.0%';
+                    rowsToDisplay.push({ 
+                        entity: a, 
+                        base: item.base, 
+                        septSingle: item.sSingle, septDouble: item.sDouble, septPct,
+                        marchSingle: item.mSingle, marchDouble: item.mDouble, marchPct 
+                    });
                 });
             }
             else {
                 thEntity.textContent = 'Dashboard (Club Level)';
                 data.forEach(c => {
                     const base = Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
-                    const single = Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                    const double = Number(c['Double Renewal'] ?? 0);
-                    const sept = Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                    const pct = base > 0 ? ((sept / base) * 100).toFixed(1) + '%' : '0.0%';
-                    rowsToDisplay.push({ entity: `${c['Club Name']} (Div ${c['Division']}/Area ${c['Area']})`, base: base, single: single, double: double, pct: pct });
+                    const septSingle = Number(c['Sept Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    const septDouble = Number(c['Sept Double Renewal'] ?? 0);
+                    const septTotal = Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    const septPct = base > 0 ? ((septTotal / base) * 100).toFixed(1) + '%' : '0.0%';
+
+                    const marchSingle = Number(c['March Single Renewal'] ?? c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    const marchDouble = Number(c['March Double Renewal'] ?? 0);
+                    const marchTotal = Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    const marchPct = base > 0 ? ((marchTotal / base) * 100).toFixed(1) + '%' : '0.0%';
+
+                    rowsToDisplay.push({ 
+                        entity: `${c['Club Name']} (Div ${c['Division']}/Area ${c['Area']})`, 
+                        base: base, 
+                        septSingle, septDouble, septPct,
+                        marchSingle, marchDouble, marchPct 
+                    });
                 });
             }
 
@@ -343,9 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.innerHTML = `
                     <td><strong>${r.entity}</strong></td>
                     <td>${r.base.toLocaleString()}</td>
-                    <td>${r.single.toLocaleString()}</td>
-                    <td>${r.double.toLocaleString()}</td>
-                    <td><strong>${r.pct}</strong></td>
+                    <td>${r.septSingle.toLocaleString()}</td>
+                    <td>${r.septDouble.toLocaleString()}</td>
+                    <td><strong>${r.septPct}</strong></td>
+                    <td>${r.marchSingle.toLocaleString()}</td>
+                    <td>${r.marchDouble.toLocaleString()}</td>
+                    <td><strong>${r.marchPct}</strong></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -355,16 +401,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const tbody = document.querySelector('#sept-renewal-report-table tbody');
             tbody.innerHTML = '';
 
-            let totSingle = 0, totDouble = 0, totSept = 0;
+            let sSingle = 0, sDouble = 0, sTotal = 0;
+            let mSingle = 0, mDouble = 0, mTotal = 0;
+
             data.forEach(c => {
-                totSingle += Number(c['Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
-                totDouble += Number(c['Double Renewal'] ?? 0);
-                totSept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                sSingle += Number(c['Sept Single Renewal'] ?? c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                sDouble += Number(c['Sept Double Renewal'] ?? 0);
+                sTotal += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+
+                mSingle += Number(c['March Single Renewal'] ?? c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                mDouble += Number(c['March Double Renewal'] ?? 0);
+                mTotal += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
             });
 
             const reportRows = [
-                { name: 'Member Level', single: totSingle, double: totDouble, total: totSept },
-                { name: '2800+ Target Level', single: totSingle >= 2800 ? 2800 : totSingle, double: totDouble, total: totSept }
+                { name: 'September Renewals (Member Level)', single: sSingle, double: sDouble, total: sTotal },
+                { name: 'September Renewals (2800+ Target Level)', single: sSingle >= 2800 ? 2800 : sSingle, double: sDouble, total: sTotal },
+                { name: 'March Renewals (Member Level)', single: mSingle, double: mDouble, total: mTotal },
+                { name: 'March Renewals (2800+ Target Level)', single: mSingle >= 2800 ? 2800 : mSingle, double: mDouble, total: mTotal }
             ];
 
             reportRows.forEach(r => {

@@ -142,9 +142,11 @@ def load_and_clean_data(data_dir, timestamp):
         'Total to Date': 'Total Payments'
     })
     
-    # Calculate Single vs Double Renewals logic for Sept Renewal Report
-    final_df['Single Renewal'] = final_df['September Renewals'].apply(lambda x: max(0, int(x)))
-    final_df['Double Renewal'] = 0
+    # Calculate Single vs Double Renewals logic for September & March Renewal Report
+    final_df['Sept Single Renewal'] = final_df['September Renewals'].apply(lambda x: max(0, int(x)))
+    final_df['Sept Double Renewal'] = 0
+    final_df['March Single Renewal'] = final_df['March Renewals'].apply(lambda x: max(0, int(x)))
+    final_df['March Double Renewal'] = 0
     
     final_df = final_df.sort_values(by=['Division', 'Area', 'Club Number']).reset_index(drop=True)
     return final_df, club_files + district_files + div_files
@@ -172,7 +174,7 @@ def generate_excel_mastersheet(final_df, output_excel_path):
         ws_details[f"C{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"D{row_num}"].alignment = ALIGN_CENTER
         ws_details[f"F{row_num}"].alignment = ALIGN_CENTER
-        for c in ["G", "H", "I", "J", "K", "L", "M", "N", "O"]:
+        for c in ["G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q"]:
             ws_details[f"{c}{row_num}"].number_format = "#,##0"
             ws_details[f"{c}{row_num}"].alignment = ALIGN_RIGHT
             
