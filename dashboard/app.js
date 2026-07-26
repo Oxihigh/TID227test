@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let statusChartInstance = null;
     let scatterChartInstance = null;
 
-    // Auto-load District 121 - Mastersheet.xlsx if available locally
+    // Auto-load District 121 - Mastersheet.xlsx on page load
     autoLoadMastersheet();
 
     uploadInput.addEventListener('change', (e) => {
@@ -21,18 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function autoLoadMastersheet() {
-        fetch('../District 121 - Mastersheet.xlsx')
-            .then(res => {
-                if (!res.ok) throw new Error('File not found');
-                return res.arrayBuffer();
-            })
-            .then(buffer => {
-                uploadStatus.textContent = 'Auto-loaded District 121 - Mastersheet.xlsx';
-                parseWorkbookBuffer(buffer);
-            })
-            .catch(err => {
+        const paths = ['./District 121 - Mastersheet.xlsx', '../District 121 - Mastersheet.xlsx'];
+        
+        function tryNextPath(index) {
+            if (index >= paths.length) {
                 uploadStatus.textContent = 'Waiting for file upload...';
-            });
+                return;
+            }
+            fetch(paths[index])
+                .then(res => {
+                    if (!res.ok) throw new Error('Not found');
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    uploadStatus.textContent = 'Auto-loaded District 121 - Mastersheet.xlsx';
+                    parseWorkbookBuffer(buffer);
+                })
+                .catch(() => {
+                    tryNextPath(index + 1);
+                });
+        }
+
+        tryNextPath(0);
     }
 
     function parseFile(file) {
@@ -65,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = new Uint8Array(buffer);
             const workbook = XLSX.read(data, { type: 'array' });
             
-            // Prefer 'ClubDetails' sheet if present, else fallback to first sheet
             const targetSheet = workbook.SheetNames.includes('ClubDetails') ? 'ClubDetails' : workbook.SheetNames[0];
             const worksheet = workbook.Sheets[targetSheet];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
