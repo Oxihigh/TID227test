@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     totSept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
                 });
                 const pct = totBase > 0 ? ((totSept / totBase) * 100).toFixed(1) + '%' : '0.0%';
-                rowsToDisplay.push({ entity: 'District 121 Total', base: totBase, single: totSingle, double: totDouble, pct: pct });
+                rowsToDisplay.push({ entity: 'District 227 Total', base: totBase, single: totSingle, double: totDouble, pct: pct });
             } 
             else if (currentLevel === 'div') {
                 thEntity.textContent = 'Dashboard (Division Level)';

@@ -59,13 +59,19 @@ body {
 .tmi-logo {
     width: 44px;
     height: 44px;
-    background: var(--tmi-maroon);
+    background: white;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--tmi-yellow);
-    font-size: 24px;
+    padding: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.tmi-logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
 }
 
 .sidebar-header h2 {
