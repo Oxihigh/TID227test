@@ -1,0 +1,16 @@
+Metric Category,Goal Name,Target Goal,Actual To Date,Pending Goal
+Payments,Base Payments,8634,7808.0,826.0
+Payments,Distinguished (1%),8720,7808.0,912.0
+Payments,Select Distinguished (3%),8893,7808.0,1085.0
+Payments,President's Distinguished (5%),9066,7808.0,1258.0
+Payments,Smedley Distinguished (8%),9325,7808.0,1517.0
+Clubs,Base Clubs,189,164.0,25.0
+Clubs,Distinguished,189,164.0,25.0
+Clubs,Select Distinguished,184,164.0,20.0
+Clubs,President's Distinguished,194,164.0,30.0
+Clubs,Smedley Distinguished,197,164.0,33.0
+Distinguished Clubs,Prerequisite,0,91.0,0.0
+Distinguished Clubs,Distinguished (40%),76,91.0,0.0
+Distinguished Clubs,Select Distinguished,89,91.0,0.0
+Distinguished Clubs,President's Distinguished,100,91.0,9.0
+Distinguished Clubs,Smedley Distinguished,108,91.0,17.0

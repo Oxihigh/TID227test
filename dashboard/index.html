@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toastmasters Performance Insights</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <i class='bx bxs-bar-chart-alt-2 logo-icon'></i>
+                <h2>TM Insights</h2>
+            </div>
+            
+            <div class="upload-section">
+                <label for="csv-upload" class="upload-btn">
+                    <i class='bx bx-cloud-upload'></i> Upload CSV Data
+                </label>
+                <input type="file" id="csv-upload" accept=".csv" class="hidden-input">
+                <p id="upload-status" class="status-text">Waiting for data...</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>District Performance Dashboard</h1>
+                <p class="subtitle">Gain meaningful insights into your Toastmasters clubs</p>
+            </header>
+
+            <!-- KPIs -->
+            <section class="kpi-grid hidden" id="dashboard-content">
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-icon"><i class='bx bx-building-house'></i></div>
+                    <div class="kpi-data">
+                        <h3 id="kpi-total-clubs">-</h3>
+                        <p>Total Clubs</p>
+                    </div>
+                </div>
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-icon"><i class='bx bx-user-pin'></i></div>
+                    <div class="kpi-data">
+                        <h3 id="kpi-active-members">-</h3>
+                        <p>Active Members</p>
+                    </div>
+                </div>
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-icon"><i class='bx bx-trending-up'></i></div>
+                    <div class="kpi-data">
+                        <h3 id="kpi-avg-goals">-</h3>
+                        <p>Avg. Goals Met</p>
+                    </div>
+                </div>
+                <div class="kpi-card glass-panel">
+                    <div class="kpi-icon"><i class='bx bx-award'></i></div>
+                    <div class="kpi-data">
+                        <h3 id="kpi-distinguished">-</h3>
+                        <p>Distinguished Clubs</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts -->
+            <section class="charts-grid hidden" id="charts-content">
+                <div class="chart-card glass-panel span-2">
+                    <h3 class="chart-title">Distinguished Status Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="distinguishedChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card glass-panel">
+                    <h3 class="chart-title">Club Status Overview</h3>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card glass-panel">
+                    <h3 class="chart-title">Goals Met vs Net Growth</h3>
+                    <div class="chart-container">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card glass-panel span-2">
+                    <h3 class="chart-title">Top 10 Clubs by Net Growth</h3>
+                    <div class="table-container">
+                        <table id="top-clubs-table">
+                            <thead>
+                                <tr>
+                                    <th>Club Name</th>
+                                    <th>Div/Area</th>
+                                    <th>Base</th>
+                                    <th>Active</th>
+                                    <th>Net Growth</th>
+                                    <th>Goals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows generated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <div id="welcome-message" class="welcome-message">
+                <div class="empty-state glass-panel">
+                    <i class='bx bx-data'></i>
+                    <h2>No Data Loaded</h2>
+                    <p>Please upload your <code>master_performance_*.csv</code> file using the sidebar to generate insights.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
