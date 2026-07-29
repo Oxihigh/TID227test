@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     autoLoadMastersheet();
 
     function autoLoadMastersheet() {
-        const jsonPaths = ['./District 121 - Mastersheet.json', 'District 121 - Mastersheet.json', '../District 121 - Mastersheet.json'];
-        const excelPaths = ['./District 121 - Mastersheet.xlsx', 'District 121 - Mastersheet.xlsx', '../District 121 - Mastersheet.xlsx'];
+        const jsonPaths = ['./District 227 - Mastersheet.json', 'District 227 - Mastersheet.json', '../District 227 - Mastersheet.json', './District 121 - Mastersheet.json', '../District 121 - Mastersheet.json'];
+        const excelPaths = ['./District 227 - Mastersheet.xlsx', 'District 227 - Mastersheet.xlsx', '../District 227 - Mastersheet.xlsx', './District 121 - Mastersheet.xlsx', '../District 121 - Mastersheet.xlsx'];
 
         function tryNextJson(index) {
             if (index >= jsonPaths.length) {

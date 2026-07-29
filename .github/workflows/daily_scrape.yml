@@ -37,6 +37,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "District 121 - Mastersheet.xlsx" dashboard/
-          git diff --quiet && git diff --staged --quiet || git commit -m "Automated daily update of District 121 Mastersheet"
+          git add "District 227 - Mastersheet.xlsx" dashboard/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Automated daily update of District 227 Mastersheet"
           git push

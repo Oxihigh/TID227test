@@ -49,9 +49,9 @@ def setup_logging():
     return log_filename
 
 TARGET_PAGES = {
-    "district_performance": "https://dashboards.toastmasters.org/District.aspx?id=121",
-    "division_area_performance": "https://dashboards.toastmasters.org/Division.aspx?id=121",
-    "club_performance": "https://dashboards.toastmasters.org/Club.aspx?id=121"
+    "district_performance": "https://dashboards.toastmasters.org/District.aspx?id=227",
+    "division_area_performance": "https://dashboards.toastmasters.org/Division.aspx?id=227",
+    "club_performance": "https://dashboards.toastmasters.org/Club.aspx?id=227"
 }
 
 def download_data_from_url(page, name, url, timestamp):
@@ -317,7 +317,7 @@ def generate_excel_mastersheet(final_df, output_excel_path):
     # 3. Overall Sheet
     ws_ov = wb.create_sheet(title="Overall", index=1)
     ws_ov.views.sheetView[0].showGridLines = True
-    ws_ov.cell(row=1, column=1, value="District 121 - Divisions Performance Rolled-up Summary").font = Font(name="Segoe UI", size=14, bold=True, color="1B365D")
+    ws_ov.cell(row=1, column=1, value="District 227 - Divisions Performance Rolled-up Summary").font = Font(name="Segoe UI", size=14, bold=True, color="1B365D")
     
     headers_ov_div = [
         "Division", "Base Clubs", "Active Clubs", "Distinguished Clubs", 
@@ -477,7 +477,7 @@ def generate_excel_mastersheet(final_df, output_excel_path):
     ws_dist = wb.create_sheet(title="District", index=0)
     ws_dist.views.sheetView[0].showGridLines = True
     
-    ws_dist.cell(row=1, column=1, value="District 121 Performance Dashboard").font = Font(name="Segoe UI", size=16, bold=True, color="1B365D")
+    ws_dist.cell(row=1, column=1, value="District 227 Performance Dashboard").font = Font(name="Segoe UI", size=16, bold=True, color="1B365D")
     ws_dist.cell(row=2, column=1, value="Membership, Payments & Club Recognition Goals").font = FONT_SUBTITLE
     
     ws_dist.cell(row=4, column=1, value="Payments Goals").font = FONT_BODY_BOLD
@@ -670,16 +670,16 @@ def process_downloaded_data(data_dir, workspace_dir, timestamp):
     if final_df is None:
         return
 
-    output_excel_path = os.path.join(workspace_dir, "District 121 - Mastersheet.xlsx")
+    output_excel_path = os.path.join(workspace_dir, "District 227 - Mastersheet.xlsx")
     generate_excel_mastersheet(final_df, output_excel_path)
 
     # Save copies inside dashboard directory for direct automatic serving
     dashboard_dir = os.path.join(workspace_dir, "dashboard")
     if os.path.exists(dashboard_dir):
-        dashboard_excel_path = os.path.join(dashboard_dir, "District 121 - Mastersheet.xlsx")
+        dashboard_excel_path = os.path.join(dashboard_dir, "District 227 - Mastersheet.xlsx")
         shutil.copy2(output_excel_path, dashboard_excel_path)
         
-        dashboard_json_path = os.path.join(dashboard_dir, "District 121 - Mastersheet.json")
+        dashboard_json_path = os.path.join(dashboard_dir, "District 227 - Mastersheet.json")
         final_df.to_json(dashboard_json_path, orient="records", indent=2)
         logging.info(f"✅ Copied Mastersheet Excel & JSON to dashboard folder.")
 
