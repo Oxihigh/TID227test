@@ -395,9 +395,14 @@
 
                 <section class="table-section">
                     <div class="table-header-controls">
-                        <h3 class="chart-title">Club Renewal Performance</h3>
+                        <h3 class="chart-title"><i class='bx bx-refresh'></i> ROLLED-UP RENEWALS PERFORMANCE</h3>
                         <div class="filter-controls">
-                            <input type="text" id="renewal-search" placeholder="Search club..." class="tmi-input">
+                            <div class="level-btn-group">
+                                <button class="level-btn renewal-level-btn active" data-level="div">Division View</button>
+                                <button class="level-btn renewal-level-btn" data-level="area">Area View</button>
+                                <button class="level-btn renewal-level-btn" data-level="club">Club View</button>
+                            </div>
+                            <input type="text" id="renewal-search" placeholder="Search entity..." class="tmi-input">
                         </div>
                     </div>
 
@@ -405,8 +410,7 @@
                         <table id="renewal-table">
                             <thead>
                                 <tr>
-                                    <th>Club Name</th>
-                                    <th>Div / Area</th>
+                                    <th id="th-renewal-entity">Division Name</th>
                                     <th>Base Mem.</th>
                                     <th>Active Mem.</th>
                                     <th>Sept Renewals</th>

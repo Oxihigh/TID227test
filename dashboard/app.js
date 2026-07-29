@@ -585,51 +585,121 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('renew-march-total').textContent = totalMarchRenewals.toLocaleString();
         document.getElementById('renew-march-pct').textContent = `Renewal Rate: ${marchRate}%`;
 
+        const levelBtns = document.querySelectorAll('.renewal-level-btn');
         const searchInput = document.getElementById('renewal-search');
+        let currentLevel = 'div';
+
+        levelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                levelBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLevel = btn.getAttribute('data-level');
+                updateRenewalTable();
+            });
+        });
+
+        if (searchInput) searchInput.addEventListener('input', updateRenewalTable);
 
         function updateRenewalTable() {
             const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
             const tbody = document.querySelector('#renewal-table tbody');
+            const thEntity = document.getElementById('th-renewal-entity');
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const filtered = data.filter(club => {
-                const name = String(club['Club Name'] || '').toLowerCase();
-                const div = String(club['Division'] || '').toLowerCase();
-                const area = String(club['Area'] || '').toLowerCase();
-                return name.includes(searchVal) || div.includes(searchVal) || area.includes(searchVal);
-            });
+            let rowsToDisplay = [];
 
-            filtered.forEach(club => {
+            if (currentLevel === 'div') {
+                if (thEntity) thEntity.textContent = 'Division Name';
+                const divMap = {};
+                data.forEach(c => {
+                    const d = String(c['Division'] || 'Unknown');
+                    if (!divMap[d]) divMap[d] = { base: 0, active: 0, sept: 0, march: 0 };
+                    divMap[d].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    divMap[d].active += Number(c['Active Membership'] ?? c['Active Members'] ?? 0);
+                    divMap[d].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    divMap[d].march += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                });
+
+                Object.keys(divMap).sort().forEach(d => {
+                    const item = divMap[d];
+                    const septPct = item.base > 0 ? (item.sept / item.base) * 100 : 0;
+                    const marchPct = item.base > 0 ? (item.march / item.base) * 100 : 0;
+                    rowsToDisplay.push({
+                        entity: `Division ${d}`,
+                        base: item.base,
+                        active: item.active,
+                        sept: item.sept,
+                        septPct: septPct.toFixed(1) + '%',
+                        march: item.march,
+                        marchPct: marchPct.toFixed(1) + '%'
+                    });
+                });
+            } else if (currentLevel === 'area') {
+                if (thEntity) thEntity.textContent = 'Area Name';
+                const areaMap = {};
+                data.forEach(c => {
+                    const key = `Div ${c['Division']} / Area ${c['Area']}`;
+                    if (!areaMap[key]) areaMap[key] = { base: 0, active: 0, sept: 0, march: 0 };
+                    areaMap[key].base += Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    areaMap[key].active += Number(c['Active Membership'] ?? c['Active Members'] ?? 0);
+                    areaMap[key].sept += Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    areaMap[key].march += Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                });
+
+                Object.keys(areaMap).sort().forEach(a => {
+                    const item = areaMap[a];
+                    const septPct = item.base > 0 ? (item.sept / item.base) * 100 : 0;
+                    const marchPct = item.base > 0 ? (item.march / item.base) * 100 : 0;
+                    rowsToDisplay.push({
+                        entity: a,
+                        base: item.base,
+                        active: item.active,
+                        sept: item.sept,
+                        septPct: septPct.toFixed(1) + '%',
+                        march: item.march,
+                        marchPct: marchPct.toFixed(1) + '%'
+                    });
+                });
+            } else {
+                if (thEntity) thEntity.textContent = 'Club Name';
+                data.forEach(c => {
+                    const base = Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
+                    const active = Number(c['Active Membership'] ?? c['Active Members'] ?? 0);
+                    const sept = Number(c['September Renewals'] ?? c['Oct. Ren.'] ?? 0);
+                    const septPctRaw = c['September Renewals %'] ?? (base > 0 ? sept / base : 0);
+                    const march = Number(c['March Renewals'] ?? c['Apr. Ren.'] ?? 0);
+                    const marchPctRaw = c['March Renewals %'] ?? (base > 0 ? march / base : 0);
+
+                    rowsToDisplay.push({
+                        entity: `${c['Club Name']} (Div ${c['Division']}/Area ${c['Area']})`,
+                        base: base,
+                        active: active,
+                        sept: sept,
+                        septPct: (Number(septPctRaw) * 100).toFixed(1) + '%',
+                        march: march,
+                        marchPct: (Number(marchPctRaw) * 100).toFixed(1) + '%'
+                    });
+                });
+            }
+
+            const filtered = rowsToDisplay.filter(r => r.entity.toLowerCase().includes(searchVal));
+
+            filtered.forEach(r => {
                 const tr = document.createElement('tr');
-
-                const base = Number(club['Base Membership'] ?? club['Mem. Base'] ?? 0);
-                const active = Number(club['Active Membership'] ?? club['Active Members'] ?? 0);
-
-                const sept = Number(club['September Renewals'] ?? club['Oct. Ren.'] ?? 0);
-                const septPctRaw = club['September Renewals %'] ?? (base > 0 ? sept / base : 0);
-                const septPctFormatted = (Number(septPctRaw) * 100).toFixed(1) + '%';
-
-                const march = Number(club['March Renewals'] ?? club['Apr. Ren.'] ?? 0);
-                const marchPctRaw = club['March Renewals %'] ?? (base > 0 ? march / base : 0);
-                const marchPctFormatted = (Number(marchPctRaw) * 100).toFixed(1) + '%';
-
                 tr.innerHTML = `
-                    <td><strong>${club['Club Name']}</strong></td>
-                    <td>Div ${club['Division']} / Area ${club['Area']}</td>
-                    <td>${base}</td>
-                    <td>${active}</td>
-                    <td>${sept}</td>
-                    <td><strong>${septPctFormatted}</strong></td>
-                    <td>${march}</td>
-                    <td><strong>${marchPctFormatted}</strong></td>
+                    <td><strong>${r.entity}</strong></td>
+                    <td>${r.base}</td>
+                    <td>${r.active}</td>
+                    <td>${r.sept}</td>
+                    <td><strong>${r.septPct}</strong></td>
+                    <td>${r.march}</td>
+                    <td><strong>${r.marchPct}</strong></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        if (searchInput) searchInput.addEventListener('input', updateRenewalTable);
         updateRenewalTable();
     }
 });
