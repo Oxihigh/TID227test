@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const uploadStatus = document.getElementById('upload-status');
-    
+
     // Store loaded global data
     let globalClubData = [];
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const data = new Uint8Array(buffer);
             const workbook = XLSX.read(data, { type: 'array' });
-            
+
             const targetSheet = workbook.SheetNames.includes('ClubDetails') ? 'ClubDetails' : workbook.SheetNames[0];
             const worksheet = workbook.Sheets[targetSheet];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
@@ -443,10 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('award-smedley-count').textContent = `${smedleyCount} / ${data.length}`;
         document.getElementById('award-talkup-count').textContent = `${talkupCount} / ${data.length}`;
         document.getElementById('award-clock-count').textContent = `${clockCount} / ${data.length}`;
-        
+
         const singleElem = document.getElementById('award-single-renew-count');
         if (singleElem) singleElem.textContent = `${singleRenewCount} / ${data.length}`;
-        
+
         const doubleElem = document.getElementById('award-double-renew-count');
         if (doubleElem) doubleElem.textContent = `${doubleRenewCount} / ${data.length}`;
 

@@ -195,8 +195,8 @@ def generate_excel_mastersheet(final_df, output_excel_path):
         headers_div = [
             "Club Number", "Area", "Club Name", "Base Membership", "Active Membership", 
             "DCP Goals Met", "Distinguished Status", 
-            "September Renewals", "September Renewals %", "September Renewal Status",
-            "March Renewals", "March Renewals %", "March Renewal Status",
+            "September Renewals", "September Renewals %", 
+            "March Renewals", "March Renewals %", 
             "Total Payments", "Total New Members",
             "July", "August", "September", "October", "November", "December", 
             "January", "February", "March", "April", "May", "June",
@@ -227,36 +227,34 @@ def generate_excel_mastersheet(final_df, output_excel_path):
             ws_div.cell(row=r_idx, column=7, value=f'=IF(F{r_idx}<5,"-",IF(E{r_idx}>19,"Yes",IF(E{r_idx}>D{r_idx}+2,"Yes","-")))')
             ws_div.cell(row=r_idx, column=8, value=f"=ClubDetails!K{club_row_in_details}")
             ws_div.cell(row=r_idx, column=9, value=f"=IF(D{r_idx}=0,0,H{r_idx}/D{r_idx})")
-            ws_div.cell(row=r_idx, column=10, value=f'=IF(H{r_idx}=0,"Renewals not here",IF(H{r_idx}<3,"Ineligible",IF(D{r_idx}<8,"Low","Active")))')
-            ws_div.cell(row=r_idx, column=11, value=f"=ClubDetails!L{club_row_in_details}")
-            ws_div.cell(row=r_idx, column=12, value=f"=IF(D{r_idx}=0,0,K{r_idx}/D{r_idx})")
-            ws_div.cell(row=r_idx, column=13, value=f'=IF(K{r_idx}=0,"Renewals not here",IF(K{r_idx}<3,"Ineligible",IF(E{r_idx}<8,"Low","Active")))')
-            ws_div.cell(row=r_idx, column=14, value=f"=ClubDetails!M{club_row_in_details}")
-            ws_div.cell(row=r_idx, column=15, value=f"=ClubDetails!J{club_row_in_details}")
+            ws_div.cell(row=r_idx, column=10, value=f"=ClubDetails!L{club_row_in_details}")
+            ws_div.cell(row=r_idx, column=11, value=f"=IF(D{r_idx}=0,0,J{r_idx}/D{r_idx})")
+            ws_div.cell(row=r_idx, column=12, value=f"=ClubDetails!M{club_row_in_details}")
+            ws_div.cell(row=r_idx, column=13, value=f"=ClubDetails!J{club_row_in_details}")
             
-            for col_idx in range(16, 28):
+            for col_idx in range(14, 26):
                 ws_div.cell(row=r_idx, column=col_idx, value=0).number_format = "#,##0"
                 ws_div.cell(row=r_idx, column=col_idx).alignment = ALIGN_RIGHT
                 
-            ws_div.cell(row=r_idx, column=28, value=f'=IF(SUM(Q{r_idx}:R{r_idx})>=5,"Yes","No")')
-            ws_div.cell(row=r_idx, column=29, value=f'=IF(SUM(Q{r_idx}:R{r_idx})>=5,0,5-SUM(Q{r_idx}:R{r_idx}))')
-            ws_div.cell(row=r_idx, column=30, value=f'=IF(SUM(W{r_idx}:X{r_idx})>=5,"Yes","No")')
-            ws_div.cell(row=r_idx, column=31, value=f'=IF(SUM(W{r_idx}:X{r_idx})>=5,0,5-SUM(W{r_idx}:X{r_idx}))')
-            ws_div.cell(row=r_idx, column=32, value=f'=IF(SUM(Z{r_idx}:AA{r_idx})>=5,"Yes","No")')
-            ws_div.cell(row=r_idx, column=33, value=f'=IF(SUM(Z{r_idx}:AA{r_idx})>=5,0,5-SUM(Z{r_idx}:AA{r_idx}))')
+            ws_div.cell(row=r_idx, column=26, value=f'=IF(SUM(O{r_idx}:P{r_idx})>=5,"Yes","No")')
+            ws_div.cell(row=r_idx, column=27, value=f'=IF(SUM(O{r_idx}:P{r_idx})>=5,0,5-SUM(O{r_idx}:P{r_idx}))')
+            ws_div.cell(row=r_idx, column=28, value=f'=IF(SUM(U{r_idx}:V{r_idx})>=5,"Yes","No")')
+            ws_div.cell(row=r_idx, column=29, value=f'=IF(SUM(U{r_idx}:V{r_idx})>=5,0,5-SUM(U{r_idx}:V{r_idx}))')
+            ws_div.cell(row=r_idx, column=30, value=f'=IF(SUM(X{r_idx}:Y{r_idx})>=5,"Yes","No")')
+            ws_div.cell(row=r_idx, column=31, value=f'=IF(SUM(X{r_idx}:Y{r_idx})>=5,0,5-SUM(X{r_idx}:Y{r_idx}))')
             
             fill = ZEBRA_FILL if r_idx % 2 == 0 else WHITE_FILL
-            for c_idx in range(1, 34):
+            for c_idx in range(1, 32):
                 cell = ws_div.cell(row=r_idx, column=c_idx)
                 cell.font = FONT_BODY
                 cell.border = THIN_BORDER
-                if c_idx not in [1, 2, 3, 7, 10, 13, 28, 30, 32]:
+                if c_idx not in [1, 2, 3, 7, 26, 28, 30]:
                     cell.alignment = ALIGN_RIGHT
-                    if c_idx in [9, 12]:
+                    if c_idx in [9, 11]:
                         cell.number_format = "0.0%"
                     else:
                         cell.number_format = "#,##0"
-                elif c_idx in [7, 10, 13, 28, 30, 32]:
+                elif c_idx in [7, 26, 28, 30]:
                     cell.alignment = ALIGN_CENTER
 
         summary_row = len(div_clubs) + 4
@@ -276,32 +274,30 @@ def generate_excel_mastersheet(final_df, output_excel_path):
         ws_div.cell(row=summary_row, column=7, value=f'=COUNTIF(G4:G{summary_row-1},"Yes")')
         ws_div.cell(row=summary_row, column=8, value=f"=SUM(H4:H{summary_row-1})")
         ws_div.cell(row=summary_row, column=9, value=f"=IF(D{summary_row}=0,0,H{summary_row}/D{summary_row})")
-        ws_div.cell(row=summary_row, column=10, value="")
-        ws_div.cell(row=summary_row, column=11, value=f"=SUM(K4:K{summary_row-1})")
-        ws_div.cell(row=summary_row, column=12, value=f"=IF(D{summary_row}=0,0,K{summary_row}/D{summary_row})")
-        ws_div.cell(row=summary_row, column=13, value="")
-        ws_div.cell(row=summary_row, column=14, value=f"=SUM(N4:N{summary_row-1})")
-        ws_div.cell(row=summary_row, column=15, value=f"=SUM(O4:O{summary_row-1})")
+        ws_div.cell(row=summary_row, column=10, value=f"=SUM(J4:J{summary_row-1})")
+        ws_div.cell(row=summary_row, column=11, value=f"=IF(D{summary_row}=0,0,J{summary_row}/D{summary_row})")
+        ws_div.cell(row=summary_row, column=12, value=f"=SUM(L4:L{summary_row-1})")
+        ws_div.cell(row=summary_row, column=13, value=f"=SUM(M4:M{summary_row-1})")
         
-        for m_col in range(16, 28):
+        for m_col in range(14, 26):
             m_letter = get_column_letter(m_col)
             ws_div.cell(row=summary_row, column=m_col, value=f"=SUM({m_letter}4:{m_letter}{summary_row-1})")
             
+        ws_div.cell(row=summary_row, column=26, value=f'=COUNTIF(Z4:Z{summary_row-1},"Yes")')
+        ws_div.cell(row=summary_row, column=27, value=f"=SUM(AA4:AA{summary_row-1})")
         ws_div.cell(row=summary_row, column=28, value=f'=COUNTIF(AB4:AB{summary_row-1},"Yes")')
         ws_div.cell(row=summary_row, column=29, value=f"=SUM(AC4:AC{summary_row-1})")
         ws_div.cell(row=summary_row, column=30, value=f'=COUNTIF(AD4:AD{summary_row-1},"Yes")')
         ws_div.cell(row=summary_row, column=31, value=f"=SUM(AE4:AE{summary_row-1})")
-        ws_div.cell(row=summary_row, column=32, value=f'=COUNTIF(AF4:AF{summary_row-1},"Yes")')
-        ws_div.cell(row=summary_row, column=33, value=f"=SUM(AG4:AG{summary_row-1})")
         
-        for c_idx in range(4, 34):
+        for c_idx in range(4, 32):
             cell = ws_div.cell(row=summary_row, column=c_idx)
             cell.font = FONT_BODY_BOLD
             cell.border = THIN_BORDER
             cell.fill = SILVER_FILL
-            if c_idx not in [7, 10, 13, 28, 30, 32]:
+            if c_idx not in [7, 26, 28, 30]:
                 cell.alignment = ALIGN_RIGHT
-                if c_idx in [9, 12]:
+                if c_idx in [9, 11]:
                     cell.number_format = "0.0%"
                 elif c_idx == 6:
                     cell.number_format = "0.0"
