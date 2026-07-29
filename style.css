@@ -80,6 +80,11 @@ body {
     gap: 6px;
 }
 
+/* Easy Unpause Toggle: Remove .paused-page or set to inline-flex to restore all pages */
+.paused-page {
+    display: none !important;
+}
+
 .top-nav-btn {
     display: flex;
     align-items: center;

@@ -37,19 +37,20 @@
         </div>
 
         <nav class="top-nav-menu">
-            <button class="top-nav-btn active" data-view="overview">
+            <!-- Paused Pages: Remove 'paused-page' class to easily unpause -->
+            <button class="top-nav-btn paused-page" data-view="overview">
                 <i class='bx bx-grid-alt'></i> Overview
             </button>
-            <button class="top-nav-btn" data-view="growth">
+            <button class="top-nav-btn paused-page" data-view="growth">
                 <i class='bx bx-layer'></i> Div / Area / Club Rollup
             </button>
-            <button class="top-nav-btn" data-view="campaigns">
+            <button class="top-nav-btn paused-page" data-view="campaigns">
                 <i class='bx bx-trophy'></i> Awards & Campaigns
             </button>
-            <button class="top-nav-btn" data-view="renewals">
+            <button class="top-nav-btn active" data-view="renewals">
                 <i class='bx bx-refresh'></i> Renewals Tracker
             </button>
-            <button class="top-nav-btn" data-view="vision">
+            <button class="top-nav-btn paused-page" data-view="vision">
                 <i class='bx bx-target-lock'></i> Vision & Mission
             </button>
         </nav>
@@ -58,8 +59,8 @@
     <!-- Main Content Container -->
     <div class="app-container">
         <main class="main-content">
-            <!-- VIEW 1: OVERVIEW DASHBOARD (OLD OVERVIEW RESTORED) -->
-            <div id="view-overview" class="dashboard-view active-view">
+            <!-- VIEW 1: OVERVIEW DASHBOARD -->
+            <div id="view-overview" class="dashboard-view hidden-view">
                 <header class="page-header">
                     <h1>District 227 Performance Overview</h1>
                     <p class="subtitle">Official Toastmasters International performance analytics & growth metrics</p>
@@ -245,9 +246,9 @@
                         <h3 class="chart-title"><i class='bx bx-layer'></i> DIV / AREA / CLUB ROLLED-UP VIEW</h3>
                         <div class="filter-controls">
                             <div class="level-btn-group">
-                                <button class="level-btn growth-level-btn active" data-level="div">Division View</button>
-                                <button class="level-btn growth-level-btn" data-level="area">Area View</button>
-                                <button class="level-btn growth-level-btn" data-level="club">Club View</button>
+                                <button class="level-btn growth-level-btn active" data-level="div">Divisions</button>
+                                <button class="level-btn growth-level-btn" data-level="area">Areas</button>
+                                <button class="level-btn growth-level-btn" data-level="club">Clubs</button>
                             </div>
                             <input type="text" id="growth-search" placeholder="Search entity..." class="tmi-input">
                         </div>
@@ -368,7 +369,7 @@
             </div>
 
             <!-- VIEW 4: RENEWALS TRACKER -->
-            <div id="view-renewals" class="dashboard-view hidden-view">
+            <div id="view-renewals" class="dashboard-view active-view">
                 <header class="page-header">
                     <h1>Dues Renewal Performance Tracker</h1>
                     <p class="subtitle">Monitor September & March membership renewals performance for District 227</p>
@@ -398,9 +399,9 @@
                         <h3 class="chart-title"><i class='bx bx-refresh'></i> ROLLED-UP RENEWALS PERFORMANCE</h3>
                         <div class="filter-controls">
                             <div class="level-btn-group">
-                                <button class="level-btn renewal-level-btn active" data-level="div">Division View</button>
-                                <button class="level-btn renewal-level-btn" data-level="area">Area View</button>
-                                <button class="level-btn renewal-level-btn" data-level="club">Club View</button>
+                                <button class="level-btn renewal-level-btn active" data-level="div">Divisions</button>
+                                <button class="level-btn renewal-level-btn" data-level="area">Areas</button>
+                                <button class="level-btn renewal-level-btn" data-level="club">Clubs</button>
                             </div>
                             <input type="text" id="renewal-search" placeholder="Search entity..." class="tmi-input">
                         </div>
