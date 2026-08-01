@@ -599,6 +599,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (searchInput) searchInput.addEventListener('input', updateRenewalTable);
+        const sortSelect = document.getElementById('renewal-sort');
+        if (sortSelect) sortSelect.addEventListener('change', updateRenewalTable);
 
         function updateRenewalTable() {
             const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -683,7 +685,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            const filtered = rowsToDisplay.filter(r => r.entity.toLowerCase().includes(searchVal));
+            const sortSelect = document.getElementById('renewal-sort');
+            const sortVal = sortSelect ? sortSelect.value : 'name';
+            
+            let filtered = rowsToDisplay.filter(r => r.entity.toLowerCase().includes(searchVal));
+
+            filtered.sort((a, b) => {
+                if (sortVal === 'overall-desc') {
+                    return (parseFloat(b.septPct) + parseFloat(b.marchPct)) - (parseFloat(a.septPct) + parseFloat(a.marchPct));
+                } else if (sortVal === 'overall-asc') {
+                    return (parseFloat(a.septPct) + parseFloat(a.marchPct)) - (parseFloat(b.septPct) + parseFloat(b.marchPct));
+                } else if (sortVal === 'sept-desc') {
+                    return parseFloat(b.septPct) - parseFloat(a.septPct);
+                } else if (sortVal === 'sept-asc') {
+                    return parseFloat(a.septPct) - parseFloat(b.septPct);
+                } else if (sortVal === 'march-desc') {
+                    return parseFloat(b.marchPct) - parseFloat(a.marchPct);
+                } else if (sortVal === 'march-asc') {
+                    return parseFloat(a.marchPct) - parseFloat(b.marchPct);
+                } else {
+                    return a.entity.localeCompare(b.entity);
+                }
+            });
 
             filtered.forEach(r => {
                 const tr = document.createElement('tr');
