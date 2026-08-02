@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             loadHistoricBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Loading...';
             loadHistoricBtn.disabled = true;
 
-            fetch(`/api/historic?date=${dateVal}`)
+            fetch(`history/${dateVal}.json`)
                 .then(res => {
-                    if (!res.ok) throw new Error('Failed to fetch historic data');
+                    if (!res.ok) throw new Error(`Historical data for ${dateVal} is not available.`);
                     return res.json();
                 })
                 .then(data => {

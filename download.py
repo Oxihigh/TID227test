@@ -683,6 +683,14 @@ def process_downloaded_data(data_dir, workspace_dir, timestamp):
         final_df.to_json(dashboard_json_path, orient="records", indent=2)
         logging.info(f"✅ Copied Mastersheet Excel & JSON to dashboard folder.")
         
+        # Archive snapshot for historic dashboard viewer
+        history_dir = os.path.join(dashboard_dir, "history")
+        os.makedirs(history_dir, exist_ok=True)
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        history_json_path = os.path.join(history_dir, f"{today_str}.json")
+        final_df.to_json(history_json_path, orient="records", indent=2)
+        logging.info(f"✅ Archived daily JSON snapshot to {history_json_path}")
+        
         # Mirror static web assets to root for GitHub Pages root hosting
         for fname in ["index.html", "style.css", "app.js", "images.png", "toastmasters logo.jpg"]:
             src = os.path.join(dashboard_dir, fname)
@@ -754,5 +762,18 @@ def get_historic_data(target_date_str):
         return []
 
 if __name__ == "__main__":
+    import sys
+    import json
     setup_logging()
-    run_toastmasters_pipeline()
+    
+    if len(sys.argv) > 1:
+        target_date = sys.argv[1]
+        logging.info(f"Executing manual historical backfill for {target_date}...")
+        data = get_historic_data(target_date)
+        if data:
+            os.makedirs("dashboard/history", exist_ok=True)
+            with open(f"dashboard/history/{target_date}.json", "w") as f:
+                json.dump(data, f, indent=2)
+            logging.info(f"✅ Saved historical snapshot to dashboard/history/{target_date}.json")
+    else:
+        run_toastmasters_pipeline()
