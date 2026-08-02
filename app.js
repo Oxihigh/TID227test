@@ -31,6 +31,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Historic Dashboard Viewer Logic
+    const historicDateInput = document.getElementById('historic-date');
+    const loadHistoricBtn = document.getElementById('load-historic-btn');
+
+    if (loadHistoricBtn && historicDateInput) {
+        loadHistoricBtn.addEventListener('click', () => {
+            const dateVal = historicDateInput.value;
+            if (!dateVal) {
+                alert('Please select a date first.');
+                return;
+            }
+            
+            const originalText = loadHistoricBtn.innerHTML;
+            loadHistoricBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Loading...';
+            loadHistoricBtn.disabled = true;
+
+            fetch(`/api/historic?date=${dateVal}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch historic data');
+                    return res.json();
+                })
+                .then(data => {
+                    if (uploadStatus) uploadStatus.textContent = `Loaded historic data for ${dateVal}`;
+                    globalClubData = data;
+                    renderAllViews(data);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error loading historic data. Make sure the local server is running.');
+                })
+                .finally(() => {
+                    loadHistoricBtn.innerHTML = originalText;
+                    loadHistoricBtn.disabled = false;
+                });
+        });
+    }
+
     // Auto-load data on page start
     autoLoadMastersheet();
 
@@ -588,6 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const levelBtns = document.querySelectorAll('.renewal-level-btn');
         const searchInput = document.getElementById('renewal-search');
         let currentLevel = 'div';
+        let sortCol = 'entity';
+        let sortDir = 'asc';
 
         levelBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -599,8 +638,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (searchInput) searchInput.addEventListener('input', updateRenewalTable);
-        const sortSelect = document.getElementById('renewal-sort');
-        if (sortSelect) sortSelect.addEventListener('change', updateRenewalTable);
+
+        const sortHeaders = document.querySelectorAll('#renewal-table th.sortable');
+        sortHeaders.forEach(th => {
+            th.addEventListener('click', () => {
+                const col = th.getAttribute('data-sort');
+                if (sortCol === col) {
+                    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortCol = col;
+                    sortDir = 'asc'; // or desc based on preference
+                }
+                updateRenewalTable();
+            });
+        });
+
+        function renderSortIcons() {
+            sortHeaders.forEach(th => {
+                const icon = th.querySelector('i');
+                if (!icon) return;
+                const col = th.getAttribute('data-sort');
+                if (col === sortCol) {
+                    icon.className = sortDir === 'asc' ? 'bx bx-sort-up' : 'bx bx-sort-down';
+                } else {
+                    icon.className = 'bx bx-sort-alt-2';
+                }
+            });
+        }
 
         function updateRenewalTable() {
             const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -612,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let rowsToDisplay = [];
 
             if (currentLevel === 'div') {
-                if (thEntity) thEntity.textContent = 'Division Name';
+                if (thEntity) thEntity.innerHTML = 'Division Name <i class="bx bx-sort-alt-2"></i>';
                 const divMap = {};
                 data.forEach(c => {
                     const d = String(c['Division'] || 'Unknown');
@@ -638,7 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
             } else if (currentLevel === 'area') {
-                if (thEntity) thEntity.textContent = 'Area Name';
+                if (thEntity) thEntity.innerHTML = 'Area Name <i class="bx bx-sort-alt-2"></i>';
                 const areaMap = {};
                 data.forEach(c => {
                     const key = `Div ${c['Division']} / Area ${c['Area']}`;
@@ -664,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
             } else {
-                if (thEntity) thEntity.textContent = 'Club Name';
+                if (thEntity) thEntity.innerHTML = 'Club Name <i class="bx bx-sort-alt-2"></i>';
                 data.forEach(c => {
                     const base = Number(c['Base Membership'] ?? c['Mem. Base'] ?? 0);
                     const active = Number(c['Active Membership'] ?? c['Active Members'] ?? 0);
@@ -685,26 +749,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            const sortSelect = document.getElementById('renewal-sort');
-            const sortVal = sortSelect ? sortSelect.value : 'name';
+            renderSortIcons();
             
             let filtered = rowsToDisplay.filter(r => r.entity.toLowerCase().includes(searchVal));
 
             filtered.sort((a, b) => {
-                if (sortVal === 'overall-desc') {
-                    return (parseFloat(b.septPct) + parseFloat(b.marchPct)) - (parseFloat(a.septPct) + parseFloat(a.marchPct));
-                } else if (sortVal === 'overall-asc') {
-                    return (parseFloat(a.septPct) + parseFloat(a.marchPct)) - (parseFloat(b.septPct) + parseFloat(b.marchPct));
-                } else if (sortVal === 'sept-desc') {
-                    return parseFloat(b.septPct) - parseFloat(a.septPct);
-                } else if (sortVal === 'sept-asc') {
-                    return parseFloat(a.septPct) - parseFloat(b.septPct);
-                } else if (sortVal === 'march-desc') {
-                    return parseFloat(b.marchPct) - parseFloat(a.marchPct);
-                } else if (sortVal === 'march-asc') {
-                    return parseFloat(a.marchPct) - parseFloat(b.marchPct);
+                let valA = a[sortCol];
+                let valB = b[sortCol];
+
+                // For percentages, strip the % sign for sorting
+                if (typeof valA === 'string' && valA.endsWith('%')) {
+                    valA = parseFloat(valA);
+                    valB = parseFloat(valB);
+                }
+
+                if (typeof valA === 'string' && typeof valB === 'string') {
+                    return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
                 } else {
-                    return a.entity.localeCompare(b.entity);
+                    return sortDir === 'asc' ? valA - valB : valB - valA;
                 }
             });
 
