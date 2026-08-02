@@ -403,15 +403,7 @@
                                 <button class="level-btn renewal-level-btn" data-level="area">Areas</button>
                                 <button class="level-btn renewal-level-btn" data-level="club">Clubs</button>
                             </div>
-                            <select id="renewal-sort" class="tmi-select">
-                                <option value="name">Sort: Name (A-Z)</option>
-                                <option value="overall-desc">Sort: Overall % (High-Low)</option>
-                                <option value="overall-asc">Sort: Overall % (Low-High)</option>
-                                <option value="sept-desc">Sort: Sept % (High-Low)</option>
-                                <option value="sept-asc">Sort: Sept % (Low-High)</option>
-                                <option value="march-desc">Sort: March % (High-Low)</option>
-                                <option value="march-asc">Sort: March % (Low-High)</option>
-                            </select>
+
                             <input type="text" id="renewal-search" placeholder="Search entity..." class="tmi-input">
                         </div>
                     </div>
@@ -420,13 +412,13 @@
                         <table id="renewal-table">
                             <thead>
                                 <tr>
-                                    <th id="th-renewal-entity">Division Name</th>
-                                    <th>Base Mem.</th>
-                                    <th>Active Mem.</th>
-                                    <th>Sept Renewals</th>
-                                    <th>Sept Renewals %</th>
-                                    <th>March Renewals</th>
-                                    <th>March Renewals %</th>
+                                    <th id="th-renewal-entity" data-sort="entity" class="sortable" style="cursor:pointer">Division Name <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="base" class="sortable" style="cursor:pointer">Base Mem. <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="active" class="sortable" style="cursor:pointer">Active Mem. <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="sept" class="sortable" style="cursor:pointer">Sept Renewals <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="septPct" class="sortable" style="cursor:pointer">Sept Renewals % <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="march" class="sortable" style="cursor:pointer">March Renewals <i class='bx bx-sort-alt-2'></i></th>
+                                    <th data-sort="marchPct" class="sortable" style="cursor:pointer">March Renewals % <i class='bx bx-sort-alt-2'></i></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
