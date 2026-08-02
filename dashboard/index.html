@@ -37,22 +37,29 @@
         </div>
 
         <nav class="top-nav-menu">
-            <!-- Paused Pages: Remove 'paused-page' class to easily unpause -->
-            <button class="top-nav-btn paused-page" data-view="overview">
+            <button class="top-nav-btn" data-view="overview">
                 <i class='bx bx-grid-alt'></i> Overview
             </button>
-            <button class="top-nav-btn paused-page" data-view="growth">
+            <button class="top-nav-btn" data-view="growth">
                 <i class='bx bx-layer'></i> Div / Area / Club Rollup
             </button>
-            <button class="top-nav-btn paused-page" data-view="campaigns">
+            <button class="top-nav-btn" data-view="campaigns">
                 <i class='bx bx-trophy'></i> Awards & Campaigns
             </button>
             <button class="top-nav-btn active" data-view="renewals">
                 <i class='bx bx-refresh'></i> Renewals Tracker
             </button>
-            <button class="top-nav-btn paused-page" data-view="vision">
+            <button class="top-nav-btn" data-view="vision">
                 <i class='bx bx-target-lock'></i> Vision & Mission
             </button>
+
+            <!-- Historic Viewer Controls -->
+            <div class="historic-controls" style="display: flex; gap: 8px; align-items: center; margin-left: 16px;">
+                <input type="date" id="historic-date" class="tmi-input" style="padding: 6px; font-size: 0.85rem;">
+                <button id="load-historic-btn" class="top-nav-btn" style="background-color: var(--tmi-maroon); color: white; padding: 6px 12px;">
+                    <i class='bx bx-cloud-download'></i> Load Data
+                </button>
+            </div>
         </nav>
     </header>
 

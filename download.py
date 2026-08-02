@@ -54,7 +54,7 @@ TARGET_PAGES = {
     "club_performance": "https://dashboards.toastmasters.org/Club.aspx?id=227"
 }
 
-def download_data_from_url(page, name, url, timestamp):
+def download_data_from_url(page, name, url, timestamp, data_dir=None):
     logging.info(f"🌐 Navigating to {name}...")
     page.goto(url, timeout=60000)
     page.wait_for_load_state("networkidle")
@@ -65,7 +65,8 @@ def download_data_from_url(page, name, url, timestamp):
         page.select_option("select[name*='Export']", value="CSV")
         
     download = download_info.value
-    data_dir = os.path.join(os.getcwd(), "data")
+    if data_dir is None:
+        data_dir = os.path.join(os.getcwd(), "data")
     os.makedirs(data_dir, exist_ok=True)
     
     save_path = os.path.join(data_dir, f"{name}_{timestamp}.csv")
@@ -716,6 +717,41 @@ def run_toastmasters_pipeline():
     data_dir = os.path.join(os.getcwd(), "data")
     process_downloaded_data(data_dir, os.getcwd(), timestamp)
     logging.info("🎉 Pipeline execution complete!")
+
+def get_historic_data(target_date_str):
+    import tempfile
+    
+    dt = datetime.strptime(target_date_str, "%Y-%m-%d")
+    month = dt.month
+    day_str = f"{dt.month}/{dt.day}/{dt.year}"
+    
+    urls = {
+        "district_performance": f"https://dashboards.toastmasters.org/District.aspx?id=227&month={month}&day={day_str}",
+        "division_area_performance": f"https://dashboards.toastmasters.org/Division.aspx?id=227&month={month}&day={day_str}",
+        "club_performance": f"https://dashboards.toastmasters.org/Club.aspx?id=227&month={month}&day={day_str}"
+    }
+    
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    logging.info(f"🚀 Starting Historic Data Fetch for {target_date_str}...")
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            
+            for target_name, target_url in urls.items():
+                try:
+                    download_data_from_url(page, target_name, target_url, timestamp, data_dir=temp_dir)
+                except Exception as e:
+                    logging.error(f"❌ Failed downloading {target_name}: {str(e)}")
+                    
+            browser.close()
+            
+        final_df, raw_files = load_and_clean_data(temp_dir, timestamp)
+        if final_df is not None:
+            logging.info("🎉 Historic data fetch complete!")
+            return final_df.to_dict(orient="records")
+        return []
 
 if __name__ == "__main__":
     setup_logging()

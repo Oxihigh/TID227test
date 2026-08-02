@@ -31,6 +31,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Historic Dashboard Viewer Logic
+    const historicDateInput = document.getElementById('historic-date');
+    const loadHistoricBtn = document.getElementById('load-historic-btn');
+
+    if (loadHistoricBtn && historicDateInput) {
+        loadHistoricBtn.addEventListener('click', () => {
+            const dateVal = historicDateInput.value;
+            if (!dateVal) {
+                alert('Please select a date first.');
+                return;
+            }
+            
+            const originalText = loadHistoricBtn.innerHTML;
+            loadHistoricBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Loading...';
+            loadHistoricBtn.disabled = true;
+
+            fetch(`/api/historic?date=${dateVal}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to fetch historic data');
+                    return res.json();
+                })
+                .then(data => {
+                    if (uploadStatus) uploadStatus.textContent = `Loaded historic data for ${dateVal}`;
+                    globalClubData = data;
+                    renderAllViews(data);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error loading historic data. Make sure the local server is running.');
+                })
+                .finally(() => {
+                    loadHistoricBtn.innerHTML = originalText;
+                    loadHistoricBtn.disabled = false;
+                });
+        });
+    }
+
     // Auto-load data on page start
     autoLoadMastersheet();
 
